@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTimePrediction", "TestTimePrediction\TestTimePrediction.csproj", "{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {13CAEED7-C23C-481B-8F94-C5A2A0D1BACA}
+	EndGlobalSection
+EndGlobal
