@@ -1,4 +1,5 @@
-﻿using Trace.Api.Common.TP;
+﻿using System.Diagnostics;
+using Trace.Api.Common.TP;
 using Trace.Api.Common;
 using Trace.Api.Common.Ituff;
 using Trace.Api.Configuration;
@@ -11,94 +12,133 @@ using Trace.Api.Common.Helpers;
 using Trace.Api.Services.BinSwitch;
 using Trace.Api.Services.BinSwitch.Interfaces;
 using Trace.Api.Services.Cache;
+using Torch.CodeAnalysis.Workspace.Services.Cache;
+using Trace.Api.Services.TestResults.TestTime;
 
 namespace TestTimePrediction;
 
-internal class TraceParser
+public class TraceParser
 {
-    public TestProgram GetTestProgram()
+    public TestProgram GetTestProgram(IDriveMapping driveMapping, string stplPath, string tplPath)
     {
-        // object containing IDC network drives map
-        var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
-
-        // gets some valid test program path
-        string stplPath, tplPath;
-
-        // get path to stpl and tpl file of latest executed TP
-        GetTestProgramPath(driveMapping, out stplPath, out tplPath);
+        Console.WriteLine("Start TestProgram parsing");
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
 
         // now we need an instance to a test program parser
         // first we create the factory and ask it for a parser for the relevant test program type            
         var parserFactory = new TestProgramParserFactory(driveMapping);
 
         // parse the TP & ask for Plists    
-        TestProgram testProgram = parserFactory.ParseTestProgram(stplPath, tplPath, EnumTpParserFlag.PLists);
+        TestProgram testProgram = parserFactory.ParseTestProgram(stplPath, tplPath);
+
+        sw.Stop();
+        Console.WriteLine($"End TestProgram parsing in {sw.Elapsed}");
 
         return testProgram;
     }
 
-    private static void GetTestProgramPath(IDriveMapping driveMapping, out string stplPath, out string tplPath)
+    public IEnumerable<ClassItuffDefinition> GetClassITuffDefinitions()
     {
-        // prepare index manager to retrieve jobs info
-        using (var ituffIndexManager = new ItuffIndexManager(driveMapping))
-        {
-            // get latest job info
-            var allItuffDefinition = ituffIndexManager
-                .GetAllItuffDefinitions()
-                .Where(i => i.Errors.IsNullOrEmpty());
-            //.MaxBy(i => i.EndDate);
-            var ituffDefinition= LinqExtensions.MaxBy(allItuffDefinition, i => i.EndDate);
+        Console.WriteLine("Start GetClassITuffDefinitions");
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
 
-            // depending on EVG version which was used for that job, it may be null
-            stplPath = ituffDefinition.StplPath;
-            tplPath = ituffDefinition.TplPath;
-        }
-    }
-
-    public IEnumerable<TestInstance> GetTestInstances()
-    {
         // object containing IDC drives map
         var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
         var fileService = new PassThroughFileService(driveMapping);
 
-        ClassItuffDefinition firstItuffDefinition;
+        IEnumerable<ClassItuffDefinition> ituffDefinitionList;
 
         // use that object to search for jobs. We will look for CLASS jobs in IDC
         using (var ituffIndexManager = new ItuffIndexManager(fileService))
         {
             // for the sample take the first ituff
-            firstItuffDefinition = (ClassItuffDefinition)ituffIndexManager
+            
+            ituffDefinitionList = ituffIndexManager
                 .GetAllItuffDefinitions()
-                .First(i => i.Errors.IsNullOrEmpty());
+                .Cast<ClassItuffDefinition>()
+                .Where(i => i.Errors.IsNullOrEmpty()); // last 3 months
         }
+
+        sw.Stop();
+        Console.WriteLine($"End RunTestInstances parsing testInstances in {sw.Elapsed}");
+
+        return ituffDefinitionList;
+    }
+
+    public async Task<IEnumerable<TestInstance>> GetRunTestInstances(ItuffDefinition ituffDefinition)
+    {
+        Console.WriteLine("Start GetRunTestInstances");
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+
+        var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
+        var fileService = new PassThroughFileService(driveMapping);
 
         // that factory will prepare the session object containing all relevant data
         var sessionFactory = new SessionFactory(fileService);
 
         // start creating the session. That operation is async - for our demo we'll keep it simple and just wait for it to finish
-        using (var session = sessionFactory.CreateSession(firstItuffDefinition))
+        using (var session = sessionFactory.CreateSession(ituffDefinition))
         {
-            Console.WriteLine($"Loading data for: {firstItuffDefinition.Name} ...");
+            Console.WriteLine($"Loading data for: {ituffDefinition.Name} ...");
 
             // wait for the data to load
-            session.SessionStartup.Wait();
+            await session.SessionStartup;
 
-            var visualId = session.Units.First().VisualId;
+            //var visualId = session.Units.First().VisualId;
 
             // get instances that has runtime data, meaning at least one unit passed through it
-            var testInstances =
+            var runTestInstances =
                 session.TestProgram.MainFlow.DeepSelect()
                     .OfType<TestInstance>()
                     .Where(
                         i =>
                             i.GetRuntimeModel<TpRuntimeModel>() != null);
 
-            return testInstances;
+            sw.Stop();
+            Console.WriteLine($"End GetRunTestInstances in {sw.Elapsed}");
+
+            return runTestInstances;
         }
     }
 
     public IEnumerable<UnitTestResult> GetUnitTestResults(TestInstance testInstance)
     {
         return testInstance.GetTestResults();
+    }
+
+    public IEnumerable<(string Key, TimeSpan)> CalcTestTimeForUnits(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
+    {
+        var fileService = new PassThroughFileService(driveMapping);
+        var sessionCreator = new SessionCreator(fileService);
+
+        using (var session = sessionCreator.CreateSession(ituffDefinition))
+        {
+            Console.WriteLine($"Loading data for: {ituffDefinition.Name} ...");
+
+            // wait for the data to load
+            session.SessionStartup.Wait();
+
+            var testTimeDataCreator = new TestTimeDataCreator(null);
+
+            // run the test time calculation based on the test time ituff tokens
+            var testTimeData = testTimeDataCreator.CalculateTestTime(session, null, CancellationToken.None);
+
+            // we have test time data per selected lot
+            var lotTestTimeData = testTimeData.FirstOrDefault();
+
+            if (lotTestTimeData == null)
+            {
+                Console.WriteLine("Failed to create test time data in that lot");
+                return new []{("NA",TimeSpan.Zero)};
+            }
+
+            return lotTestTimeData.TestInstancesRawData
+                .SelectMany(ti => ti.UnitsResult)
+                .GroupBy(ur => ur.UnitId)
+                .Select(uig => (uig.Key, TimeSpan.FromMilliseconds(uig.Sum(ui => ui.Result))));
+        }
     }
 }

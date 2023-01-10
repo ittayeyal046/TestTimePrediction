@@ -1,12 +1,15 @@
 ﻿using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
+using Parquet.Data.Rows;
 
 namespace TestTimePrediction
 {
     public class Csv
     {
-       public void Write<T>(string fileName, IEnumerable<T> data)
+        private bool hasHeaderBeenWritten;
+
+        public void Write(string fileName, IEnumerable<Dictionary<string,string>> records)
         {
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
             {
@@ -15,7 +18,26 @@ namespace TestTimePrediction
             };
             using var writer = new StreamWriter(fileName);
             using var csv = new CsvWriter(writer, config);
-            csv.WriteRecords(data);
+
+            if (!hasHeaderBeenWritten)
+            {
+                foreach (var pair in records.First())
+                {
+                    csv.WriteField(pair.Key);
+                }
+
+                hasHeaderBeenWritten = true;
+                
+                csv.NextRecord();
+            }
+
+            foreach (var record in records)
+            {
+                foreach (var pair in record)
+                {
+                    csv.WriteField(pair.Value);
+                }
+            }
         }
     }
 
