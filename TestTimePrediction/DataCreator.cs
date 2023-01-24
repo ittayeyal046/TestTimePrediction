@@ -1,4 +1,5 @@
-﻿using TestTimePrediction;
+﻿using TestProgramParsers.Ph;
+using TestTimePrediction;
 using Trace.Api.Common.Ituff;
 using Trace.Api.Common.TP;
 using Trace.Api.Services.BinSwitch;
@@ -18,56 +19,33 @@ public class DataCreator : IDataCreator
         {
             var singleRecord = new Dictionary<string, string>
             {
-                ["testProgram_Name"] = testProgram?.Name,
-                ["testProgram_BomGroup"] = testProgram?.BomGroup,
-                ["testProgram_Family"] = testProgram?.Family,
-                ["testProgram_SubFamily"] = testProgram?.SubFamily,
-                ["testProgram_FlowsCollection_Count"] = testProgram?.FlowsCollection.Count.ToString(),
-                ["testProgram_IsConcurrent"] = testProgram?.IsConcurrent.ToString(),
-                ["testProgram_Patterns_Count"] = testProgram?.Plists?.Where(p => p.Patterns != null)
+                ["Name"] = testProgram?.Name,
+                ["BomGroup"] = testProgram?.BomGroup,
+                ["Family"] = testProgram?.Family,
+                ["SubFamily"] = testProgram?.SubFamily,
+                //["Socket"] = testProgram?.,
+                ["IsConcurrent"] = testProgram?.IsConcurrent.ToString(),
+                ["Patterns_Count"] = testProgram?.Plists?.Where(p => p.Patterns != null)
                     .SelectMany(p => p.Patterns)?.Distinct()?.Count().ToString(),
+                ["Tests_And_Mttx3_Count"] = 
+                    (GetAllElement<TestInstance>(testProgram)?.Count() +                     // includes the mtt
+                     GetAllElement<MttTestInstance>(testProgram)?.Count() * 2).ToString(),    // add mtt another 2 times (total of 3 times))
+                ["ConcurrentFlows_Count"] = GetAllElement<ConcurrentFlow>(testProgram)?.Count().ToString(),
+                ["Shmoo_tests_count"] = GetAllElement<TestInstance>(testProgram)?.Count(ti => ti.Name.Contains("shmoo", StringComparison.OrdinalIgnoreCase)).ToString(),
 
-                ["ituff_unit_testTimeInMS"] = testTime.Item2.Milliseconds.ToString()
+
+                ["ituff_EndDate"] = ituffDefinition.EndDate.ToString(),
+                ["ituff_PerUnit_testTimeInMS"] = testTime.TotalUnitRunTime.Milliseconds.ToString()
             };
 
             list.Add(singleRecord);
         }
 
-
-
-        /*
-        singleRecord["ituff_EndDate"] = ituffDefinition?.EndDate.ToString();
-        singleRecord["ituff_Lot"] = ituffDefinition?.Lot;
-        singleRecord["ituff_ExperimentType"] = ituffDefinition?.ExperimentType;
-        singleRecord["ituff_MaterialType"] = ituffDefinition?.MaterialType.ToString();
-
-        singleRecord["ituff_RunTest_Count"] = singleItuffTestInstances?.Count().ToString();
-        singleRecord["ituff_HotCold"] = ituffDefinition?.CurrentProcessStep;
-        singleRecord["ituff_shmooTests_count"] = singleItuffTestInstances?.Count(ti => ti.FullName.ToLower().Contains("shmoo")).ToString();
-        */
-
-
-        /*
-        // write  templates from all ITUFFs
-
-        var templatesKeyToAmount = singleItuffTestInstances.GroupBy(ti => ti.TestTemplate.TemplateType)
-            .Select(g => (g.Key, g.Count()));
-
-        foreach (var group in templatesKeyToAmount)
-        {
-            singleRecord[group.Key] = group.;
-        }
-        
-        testInstance_FullName = testInstance.FullName,
-        testInstance_TemplateName = testInstance.TestTemplate.TemplateName,
-        testInstance_TemplateType = testInstance.TestTemplate.TemplateType.ToString(),
-        testInstance_IsEdcModeOn = testInstance.IsEdcModeOn.ToString(),
-        testInstance_SpeedFlow_Name = testInstance.SpeedFlow?.Name ?? "-",
-        testInstance_SpeedFlow_Instances_Count = testInstance.SpeedFlow?.Instances.Count.ToString() ?? "-" });
-        
-        records.Add("testInstance.SpeedFlow.Instances.Count", unitTest.);
-        */
-
         return list;
+    }
+
+    private IEnumerable<T> GetAllElement<T>(TestProgram testProgram) where T : TpItemBase
+    {
+        return testProgram?.DeepSelect<T>(true);
     }
 }

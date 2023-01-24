@@ -25,14 +25,14 @@ namespace MyApp // Note: actual namespace depends on the project name.
             GetNewestTestProgramPathFromITuff(driveMapping, out string stplPath, out string tplPath);
 
             var traceParser = new TraceParser();
-            TestProgram testProgram = null;//traceParser.GetTestProgram(driveMapping, stplPath, tplPath);
+            TestProgram testProgram = traceParser.GetTestProgram(driveMapping, stplPath, tplPath);
 
             var allItuffDefinitions = traceParser.GetClassITuffDefinitions();
-            var ituffDefinition = Enumerable.MaxBy(allItuffDefinitions, i => i.EndDate);
+            var lastItuffDefinition = Enumerable.MaxBy(allItuffDefinitions, i => i.EndDate);
             //var singleItuffTestInstances = (await traceParser.GetRunTestInstances(ituffDefinition)).ToArray();
 
             IDataCreator dataCreator = new DataCreator();
-            var records = dataCreator.FillRecords(driveMapping, traceParser, ituffDefinition, testProgram);
+            var records = dataCreator.FillRecords(driveMapping, traceParser, lastItuffDefinition, testProgram);
 
             var csv = new Csv();
             csv.Write(@"C:\Temp\TestPredictionResults.csv", records);

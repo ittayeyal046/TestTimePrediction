@@ -37,6 +37,8 @@ namespace TestTimePrediction
                 {
                     csv.WriteField(pair.Value);
                 }
+
+                csv.NextRecord();
             }
         }
     }

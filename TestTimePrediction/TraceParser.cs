@@ -29,12 +29,22 @@ public class TraceParser
         // first we create the factory and ask it for a parser for the relevant test program type            
         var parserFactory = new TestProgramParserFactory(driveMapping);
 
-        // parse the TP & ask for Plists    
-        TestProgram testProgram = parserFactory.ParseTestProgram(stplPath, tplPath);
-
-        sw.Stop();
-        Console.WriteLine($"End TestProgram parsing in {sw.Elapsed}");
-
+        TestProgram testProgram = null;
+        try
+        {
+            // parse the TP & ask for Plists    
+            testProgram = parserFactory.ParseTestProgram(stplPath, tplPath);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to parse TestProgram from path {tplPath}");
+        }
+        finally
+        {
+            sw.Stop();
+            Console.WriteLine($"End TestProgram parsing in {sw.Elapsed}");
+        }
+        
         return testProgram;
     }
 
@@ -109,7 +119,7 @@ public class TraceParser
         return testInstance.GetTestResults();
     }
 
-    public IEnumerable<(string Key, TimeSpan)> CalcTestTimeForUnits(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
+    public IEnumerable<(string Key, TimeSpan TotalUnitRunTime)> CalcTestTimeForUnits(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
     {
         var fileService = new PassThroughFileService(driveMapping);
         var sessionCreator = new SessionCreator(fileService);
