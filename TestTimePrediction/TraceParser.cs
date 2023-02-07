@@ -14,14 +14,19 @@ using Trace.Api.Services.BinSwitch.Interfaces;
 using Trace.Api.Services.Cache;
 using Torch.CodeAnalysis.Workspace.Services.Cache;
 using Trace.Api.Services.TestResults.TestTime;
+using Serilog.Core;
 
 namespace TestTimePrediction;
 
 public class TraceParser
 {
-    public TestProgram GetTestProgram(IDriveMapping driveMapping, string stplPath, string tplPath)
+    public TestProgram GetTestProgram(IDriveMapping driveMapping, string stplPath, string tplPath, Logger logger)
     {
-        Console.WriteLine("Start TestProgram parsing");
+        logger.Information(Environment.NewLine + $"""
+                          Start parsing testProgram:
+                          stpl: {stplPath}
+                          tpl: {tplPath}
+                          """);
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
@@ -37,7 +42,7 @@ public class TraceParser
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to parse TestProgram from path {tplPath}");
+            Console.WriteLine($"Failed to parse TestProgram from path {tplPath}, ex={ex}");
         }
         finally
         {
@@ -92,7 +97,7 @@ public class TraceParser
         // start creating the session. That operation is async - for our demo we'll keep it simple and just wait for it to finish
         using (var session = sessionFactory.CreateSession(ituffDefinition))
         {
-            Console.WriteLine($"Loading data for: {ituffDefinition.Name} ...");
+            Console.WriteLine($"\nLoading data for: {ituffDefinition.Name} ...");
 
             // wait for the data to load
             await session.SessionStartup;

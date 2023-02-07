@@ -15,15 +15,13 @@ public class DataCreator : IDataCreator
 
         var testTimePerUnit = traceParser.CalcTestTimeForUnits(driveMapping, ituffDefinition);
 
-        foreach (var testTime in testTimePerUnit)
+        foreach (var testTime4SingleUnit in testTimePerUnit)
         {
             var singleRecord = new Dictionary<string, string>
             {
-                ["Name"] = testProgram?.Name,
-                ["BomGroup"] = testProgram?.BomGroup,
+                ["TestProgram_Name_NA"] = testProgram?.Name,
                 ["Family"] = testProgram?.Family,
                 ["SubFamily"] = testProgram?.SubFamily,
-                //["Socket"] = testProgram?.,
                 ["IsConcurrent"] = testProgram?.IsConcurrent.ToString(),
                 ["Patterns_Count"] = testProgram?.Plists?.Where(p => p.Patterns != null)
                     .SelectMany(p => p.Patterns)?.Distinct()?.Count().ToString(),
@@ -33,9 +31,17 @@ public class DataCreator : IDataCreator
                 ["ConcurrentFlows_Count"] = GetAllElement<ConcurrentFlow>(testProgram)?.Count().ToString(),
                 ["Shmoo_tests_count"] = GetAllElement<TestInstance>(testProgram)?.Count(ti => ti.Name.Contains("shmoo", StringComparison.OrdinalIgnoreCase)).ToString(),
 
+                ["ITuff_Temperature_NA"] = ituffDefinition.Temperature,
+                ["ITuff_SubmitterFullName_NA"] = ituffDefinition.SubmitterFullName,
+                ["ITuff_Lot_NA"] = ituffDefinition.Lot,
+                ["ituff_EndDate_NA"] = ituffDefinition.EndDate.ToString(),
 
-                ["ituff_EndDate"] = ituffDefinition.EndDate.ToString(),
-                ["ituff_PerUnit_testTimeInMS"] = testTime.TotalUnitRunTime.Milliseconds.ToString()
+                ["ITuff_PartType"] = ituffDefinition.PartType,
+                ["ITuff_BomGroup"] = ituffDefinition.BomGroup,
+                ["ITuff_ProcessStep"] = ituffDefinition.GetProcessStep(),
+                ["ITuff_ExperimentType"] = ituffDefinition.ExperimentType,  // correlation / engineering / walkTheLot
+
+                ["ituff_PerUnit_testTimeInMS"] = testTime4SingleUnit.TotalUnitRunTime.Milliseconds.ToString()
             };
 
             list.Add(singleRecord);
