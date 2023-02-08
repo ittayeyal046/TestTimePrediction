@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Serilog;
 using Trace.Api.Common.TP;
 using Trace.Api.Common;
 using Trace.Api.Common.Ituff;
@@ -20,9 +21,16 @@ namespace TestTimePrediction;
 
 public class TraceParser
 {
-    public TestProgram GetTestProgram(IDriveMapping driveMapping, string stplPath, string tplPath, Logger logger)
+    private readonly ILogger logger;
+
+    public TraceParser(ILogger logger)
     {
-        logger.Information(Environment.NewLine + $"""
+        this.logger = logger;
+    }
+
+    public TestProgram GetTestProgram(IDriveMapping driveMapping, string stplPath, string tplPath)
+    {
+        logger.Information($"""
                           Start parsing testProgram:
                           stpl: {stplPath}
                           tpl: {tplPath}
@@ -42,12 +50,12 @@ public class TraceParser
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to parse TestProgram from path {tplPath}, ex={ex}");
+            logger.Error($"Failed to parse TestProgram from path {tplPath}, ex={ex}");
         }
         finally
         {
             sw.Stop();
-            Console.WriteLine($"End TestProgram parsing in {sw.Elapsed}");
+            logger.Information($"End TestProgram parsing in {sw.Elapsed}");
         }
         
         return testProgram;
@@ -55,7 +63,7 @@ public class TraceParser
 
     public IEnumerable<ClassItuffDefinition> GetClassITuffDefinitions()
     {
-        Console.WriteLine("Start GetClassITuffDefinitions");
+        logger.Information("Start GetClassITuffDefinitions");
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
@@ -77,14 +85,14 @@ public class TraceParser
         }
 
         sw.Stop();
-        Console.WriteLine($"End RunTestInstances parsing testInstances in {sw.Elapsed}");
+        logger.Information($"End RunTestInstances parsing testInstances in {sw.Elapsed}");
 
         return ituffDefinitionList;
     }
 
     public async Task<IEnumerable<TestInstance>> GetRunTestInstances(ItuffDefinition ituffDefinition)
     {
-        Console.WriteLine("Start GetRunTestInstances");
+        logger.Information("Start GetRunTestInstances");
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
@@ -97,7 +105,7 @@ public class TraceParser
         // start creating the session. That operation is async - for our demo we'll keep it simple and just wait for it to finish
         using (var session = sessionFactory.CreateSession(ituffDefinition))
         {
-            Console.WriteLine($"\nLoading data for: {ituffDefinition.Name} ...");
+            logger.Information($"\nLoading data for: {ituffDefinition.Name} ...");
 
             // wait for the data to load
             await session.SessionStartup;
@@ -113,7 +121,7 @@ public class TraceParser
                             i.GetRuntimeModel<TpRuntimeModel>() != null);
 
             sw.Stop();
-            Console.WriteLine($"End GetRunTestInstances in {sw.Elapsed}");
+            logger.Information($"End GetRunTestInstances in {sw.Elapsed}");
 
             return runTestInstances;
         }
@@ -131,7 +139,7 @@ public class TraceParser
 
         using (var session = sessionCreator.CreateSession(ituffDefinition))
         {
-            Console.WriteLine($"Loading data for: {ituffDefinition.Name} ...");
+            logger.Information($"Loading data for: {ituffDefinition.Name} ...");
 
             // wait for the data to load
             session.SessionStartup.Wait();
@@ -146,7 +154,7 @@ public class TraceParser
 
             if (lotTestTimeData == null)
             {
-                Console.WriteLine("Failed to create test time data in that lot");
+                logger.Error("Failed to create test time data in that lot");
                 return new []{("NA",TimeSpan.Zero)};
             }
 

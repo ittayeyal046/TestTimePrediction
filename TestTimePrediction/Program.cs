@@ -14,11 +14,11 @@ namespace MyApp // Note: actual namespace depends on the project name.
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var fileName = @$"C:\Temp\TestPredictionResults_{DateTime.Now:yy-MM-dd_hh-mm-ss}";
             var fileNameCsv = fileName + ".csv";
-            var fileNameLog = fileName + ".log";
+            var fileNameLog = fileName + ".log.txt";
 
             var logger = new LoggerConfiguration()
                        .WriteTo.Console()
@@ -32,7 +32,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
             // object containing IDC network drives map
             var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
 
-            var traceParser = new TraceParser();
+            var traceParser = new TraceParser(logger);
 
             var allItuffDefinitions = traceParser.GetClassITuffDefinitions();
             
@@ -46,7 +46,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
             foreach (var ituffDefinitionGroup in 
                                           ituffsForParsing.GroupBy(i => i.StplPath+"_"+i.TplPath))
             {
-                TestProgram testProgram = traceParser.GetTestProgram(driveMapping, ituffDefinitionGroup.First().StplPath, ituffDefinitionGroup.First().TplPath, logger);
+                TestProgram testProgram = traceParser.GetTestProgram(driveMapping, ituffDefinitionGroup.First().StplPath, ituffDefinitionGroup.First().TplPath);
 
                 if (testProgram == null)
                 {
@@ -56,14 +56,22 @@ namespace MyApp // Note: actual namespace depends on the project name.
                 foreach (var ituffDefinition in ituffDefinitionGroup)
                 {
                     records.AddRange(dataCreator.FillRecords(driveMapping, traceParser, ituffDefinition, testProgram));
-                    
-                    if(File.Exists(fileName))
-                        File.Delete(fileName);
 
-                    var csv = new Csv();
-                    csv.Write(fileName, records);
+                    try
+                    {
+                        if(File.Exists(fileNameCsv))
+                            File.Delete(fileNameCsv);
 
-                    logger.Information($"Writing {records.Count} records to file {fileName}");
+                        var csv = new Csv();
+                        csv.Write(fileNameCsv, records);
+                    }
+                    // in case file is already open in excel
+                    catch
+                    {
+                        continue;
+                    }
+
+                    logger.Information($"Writing {records.Count} records to file {fileNameCsv}");
                 }
             }
 
