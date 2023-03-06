@@ -41,7 +41,7 @@ public class DataCreator : IDataCreator
                 ["ITuff_ProcessStep"] = ituffDefinition.GetProcessStep(),
                 ["ITuff_ExperimentType"] = ituffDefinition.ExperimentType,  // correlation / engineering / walkTheLot
 
-                ["ituff_PerUnit_testTimeInMS"] = testTime4SingleUnit.TotalUnitRunTime.Milliseconds.ToString()
+                ["ituff_PerUnit_testTimeInMS"] = testTime4SingleUnit.TotalUnitRunTime.TotalSeconds.ToString()
             };
 
             list.Add(singleRecord);

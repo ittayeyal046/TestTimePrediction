@@ -29,6 +29,12 @@ namespace MyApp // Note: actual namespace depends on the project name.
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+            if (args.Length > 1)
+            {
+                logger.Error("Number of arguments must be 0 or 1 (0 use all iTuffs, 1 define amount of iTuffs)");
+                return;
+            }
+
             // object containing IDC network drives map
             var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
 
@@ -36,7 +42,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             var allItuffDefinitions = traceParser.GetClassITuffDefinitions();
             
-            int numOfItuff = -1;
+            int numOfItuff = args.Length == 0 ? -1 : int.Parse(args[0]);
             var ituffsForParsing = allItuffDefinitions.OrderBy(ituff => ituff.EndDate)
                 .TakeLast(numOfItuff == -1 ? allItuffDefinitions.Count() : numOfItuff);
 
