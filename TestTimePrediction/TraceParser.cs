@@ -132,7 +132,7 @@ public class TraceParser
         return testInstance.GetTestResults();
     }
 
-    public IEnumerable<(string Key, TimeSpan TotalUnitRunTime)> CalcTestTimeForUnits(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
+    public IEnumerable<(string Key, (bool isPassed, TimeSpan TotalUnitRunTime))> CalcTestTimeForUnits(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
     {
         var fileService = new PassThroughFileService(driveMapping);
         var sessionCreator = new SessionCreator(fileService);
@@ -155,13 +155,17 @@ public class TraceParser
             if (lotTestTimeData == null)
             {
                 logger.Error("Failed to create test time data in that lot");
-                return new []{("NA",TimeSpan.Zero)};
+                return new []{("NA", (false, TimeSpan.Zero))};
             }
+
+            var unitsIdIsPassed = lotTestTimeData.UnitsExtraData
+                .GroupBy(ur => ur.UnitId)
+                .Select(g => (g.Key, g.Any(ui => ui.IsPassed))).ToDictionary(i => i.Key, i => i.Item2);
 
             return lotTestTimeData.TestInstancesRawData
                 .SelectMany(ti => ti.UnitsResult)
                 .GroupBy(ur => ur.UnitId)
-                .Select(uig => (uig.Key, TimeSpan.FromMilliseconds(uig.Sum(ui => ui.Result))));
+                .Select(uig => (uig.Key, (unitsIdIsPassed[uig.Key], TimeSpan.FromMilliseconds(uig.Sum(ui => ui.Result)))));
         }
     }
 }

@@ -21,13 +21,14 @@ public class DataCreator : IDataCreator
             {
                 ["TestProgram_Name_NA"] = testProgram?.Name,
                 ["Family"] = testProgram?.Family,
-                ["SubFamily"] = testProgram?.SubFamily,
+                //["SubFamily"] = testProgram?.SubFamily,   // only first BomGroup, not the real
                 ["IsConcurrent"] = testProgram?.IsConcurrent.ToString(),
                 ["Patterns_Count"] = testProgram?.Plists?.Where(p => p.Patterns != null)
                     .SelectMany(p => p.Patterns)?.Distinct()?.Count().ToString(),
-                ["Tests_And_Mttx3_Count"] = 
-                    (GetAllElement<TestInstance>(testProgram)?.Count() +                     // includes the mtt
-                     GetAllElement<MttTestInstance>(testProgram)?.Count() * 2).ToString(),    // add mtt another 2 times (total of 3 times))
+                ["Tests_Count"] = 
+                    (GetAllElement<TestInstance>(testProgram)?.Count()).ToString(),
+                ["Mtt_Count"] = 
+                    GetAllElement<MttTestInstance>(testProgram)?.Count().ToString(),    // add mtt another 2 times (total of 3 times))
                 ["ConcurrentFlows_Count"] = GetAllElement<ConcurrentFlow>(testProgram)?.Count().ToString(),
                 ["Shmoo_tests_count"] = GetAllElement<TestInstance>(testProgram)?.Count(ti => ti.Name.Contains("shmoo", StringComparison.OrdinalIgnoreCase)).ToString(),
 
@@ -36,12 +37,13 @@ public class DataCreator : IDataCreator
                 ["ITuff_Lot_NA"] = ituffDefinition.Lot,
                 ["ituff_EndDate_NA"] = ituffDefinition.EndDate.ToString(),
 
-                ["ITuff_PartType"] = ituffDefinition.PartType,
-                ["ITuff_BomGroup"] = ituffDefinition.BomGroup,
-                ["ITuff_ProcessStep"] = ituffDefinition.GetProcessStep(),
-                ["ITuff_ExperimentType"] = ituffDefinition.ExperimentType,  // correlation / engineering / walkTheLot
+                ["ITuff_PartType_FromSpark"] = ituffDefinition.PartType,
+                ["ITuff_BomGroup_FromSpark"] = ituffDefinition.BomGroup,
+                ["ITuff_ProcessStep_FromSpark"] = ituffDefinition.GetProcessStep(),
+                ["ITuff_ExperimentType_FromSpark"] = ituffDefinition.ExperimentType,  // correlation / engineering / walkTheLot
 
-                ["ituff_PerUnit_testTimeInMS"] = testTime4SingleUnit.TotalUnitRunTime.TotalSeconds.ToString()
+                ["ITuff_PerUnit_IsPassed_Target_NA"] = testTime4SingleUnit.Item2.isPassed.ToString(),
+                ["ITuff_PerUnit_testTimeInMS_Target"] = testTime4SingleUnit.Item2.TotalUnitRunTime.TotalSeconds.ToString()
             };
 
             list.Add(singleRecord);

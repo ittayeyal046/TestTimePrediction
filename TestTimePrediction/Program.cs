@@ -16,7 +16,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
     {
         public static void Main(string[] args)
         {
-            var fileName = @$"C:\Temp\TestPredictionResults_{DateTime.Now:yy-MM-dd_hh-mm-ss}";
+            var fileName = @$"C:\Temp\TestPredictionResults\TestPredictionResults_{DateTime.Now:yy-MM-dd_hh-mm-ss}";
             var fileNameCsv = fileName + ".csv";
             var fileNameLog = fileName + ".log.txt";
 
@@ -40,11 +40,14 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             var traceParser = new TraceParser(logger);
 
-            var allItuffDefinitions = traceParser.GetClassITuffDefinitions();
+            var allItuffDefinitions = traceParser.GetClassITuffDefinitions().ToArray();
             
             int numOfItuff = args.Length == 0 ? -1 : int.Parse(args[0]);
-            var ituffsForParsing = allItuffDefinitions.OrderBy(ituff => ituff.EndDate)
-                .TakeLast(numOfItuff == -1 ? allItuffDefinitions.Count() : numOfItuff);
+            var ituffsForParsing = 
+                allItuffDefinitions
+                    .Where(ituff => ituff.ExperimentType is "Engineering" or "Correlation" or "WalkTheLot")
+                    .OrderByDescending(ituff => ituff.EndDate)
+                    .TakeLast(numOfItuff == -1 ? allItuffDefinitions.Count() : numOfItuff);
 
             IDataCreator dataCreator = new DataCreator();
             List<Dictionary<string, string>> records = new List<Dictionary<string, string>>();
