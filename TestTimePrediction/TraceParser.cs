@@ -134,6 +134,10 @@ public class TraceParser
 
     public IEnumerable<(string Key, (bool isPassed, TimeSpan TotalUnitRunTime))> CalcTestTimeForUnits(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
     {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        logger.Information($"Start CalcTestTimeForUnits");
+
         var fileService = new PassThroughFileService(driveMapping);
         var sessionCreator = new SessionCreator(fileService);
 
@@ -162,10 +166,14 @@ public class TraceParser
                 .GroupBy(ur => ur.UnitId)
                 .Select(g => (g.Key, g.Any(ui => ui.IsPassed))).ToDictionary(i => i.Key, i => i.Item2);
 
-            return lotTestTimeData.TestInstancesRawData
+            var result = lotTestTimeData.TestInstancesRawData
                 .SelectMany(ti => ti.UnitsResult)
                 .GroupBy(ur => ur.UnitId)
                 .Select(uig => (uig.Key, (unitsIdIsPassed[uig.Key], TimeSpan.FromMilliseconds(uig.Sum(ui => ui.Result)))));
+
+            sw.Stop();
+            logger.Information($"End CalcTestTimeForUnits, took {sw.Elapsed}");
+            return result;
         }
     }
 }
