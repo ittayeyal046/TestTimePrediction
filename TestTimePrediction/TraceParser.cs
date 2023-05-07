@@ -90,6 +90,7 @@ public class TraceParser
         return ituffDefinitionList;
     }
 
+    /*
     public async Task<IEnumerable<TestInstance>> GetRunTestInstances(ItuffDefinition ituffDefinition)
     {
         logger.Information("Start GetRunTestInstances");
@@ -126,6 +127,7 @@ public class TraceParser
             return runTestInstances;
         }
     }
+    */
 
     public IEnumerable<UnitTestResult> GetUnitTestResults(TestInstance testInstance)
     {
