@@ -12,8 +12,16 @@ public class DataCreator : IDataCreator
         ClassItuffDefinition ituffDefinition, TestProgram testProgram)
     {
         var list = new List<Dictionary<string, string>>();
+        IEnumerable<(string Key, (bool isPassed, TimeSpan TotalUnitRunTime))> testTimePerUnit;
 
-        var testTimePerUnit = traceParser.CalcTestTimeForUnits(driveMapping, ituffDefinition);
+        try
+        {
+            testTimePerUnit = traceParser.CalcTestTimeForUnits(driveMapping, ituffDefinition);
+        }
+        catch (Exception e)
+        {
+            return list;
+        }
 
         foreach (var testTime4SingleUnit in testTimePerUnit)
         {
