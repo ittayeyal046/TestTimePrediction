@@ -122,40 +122,52 @@ for i, val in enumerate(values):
 plt.show()
 
 # %%
-print(len(filtered_by_min_and_max))
-df_complete = df
-
-##df_filtered = df.drop(filtered_by_min_and_max.index)
-df_filtered = df
-del df
-
-len(df_complete)
-
-# %%
 #sb.displot(df['Shmoo_tests_count'])
 
 # %%
-df_filtered.corr()
+df_w_dummies = pd.get_dummies(df, columns =['ITuff_PartType_FromSpark'])
+df_w_dummies = pd.get_dummies(df_w_dummies, columns =['ITuff_ProcessStep_FromSpark'])
+df_w_dummies = pd.get_dummies(df_w_dummies, columns =['ITuff_ExperimentType_FromSpark'])
+
+# df_complete = pd.get_dummies(df_complete, columns =['ITuff_PartType_FromSpark'])
+# df_complete = pd.get_dummies(df_complete, columns =['ITuff_ProcessStep_FromSpark'])
+# df_complete = pd.get_dummies(df_complete, columns =['ITuff_ExperimentType_FromSpark'])
+
+#df_filtered = pd.get_dummies(df_filtered, columns =['ITuff_BomGroup_FromSpark'])
+#df_filtered = pd.get_dummies(df_filtered, columns =['Family'])
 
 # %%
-df_filtered.describe()
+#df_w_dummies.corr()
 
 # %%
-df_filtered.groupby('IsConcurrent').count()
+df_w_dummies.describe()
+
+# %%
+df_w_dummies.groupby('IsConcurrent').count()
 
 
 # %%
-df_filtered.groupby('ITuff_PerUnit_IsPassed_Target_NA').count()
+df_w_dummies.groupby('ITuff_PerUnit_IsPassed_Target_NA').count()
 
 # %%
-df_filtered.info()
+df_w_dummies.info()
 
 # %%
-df_filtered = df_filtered.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
+#print(df_filtered.shape[1])    # number of columns
+#print(df_complete.shape[1])
+# %%
+df_w_dummies.info()
+# %%
+#filtering
+
+# drop below min and above max
+df_wo_minMax = df_w_dummies.drop(filtered_by_min_and_max.index)
+
+df_filtered = df_wo_minMax.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
 df_filtered = df_filtered.drop(['Family'], axis=1)                               # 'Family' doesn’t change result
 df_filtered = df_filtered.drop(['ITuff_BomGroup_FromSpark'], axis=1)
 
-df_complete = df_complete.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
+df_complete = df_w_dummies.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
 df_complete = df_complete.drop(['Family'], axis=1)                               # 'Family' doesn’t change result
 df_complete = df_complete.drop(['ITuff_BomGroup_FromSpark'], axis=1)
 
@@ -166,25 +178,6 @@ df_complete = df_complete.drop(['ITuff_BomGroup_FromSpark'], axis=1)
 #df.drop(['Shmoo_tests_count'], axis=1, inplace=True)                   # Shmoo_tests_count helps a little
 #df.drop(['ITuff_ProcessStep_FromSpark'], axis=1, inplace=True)         # ITuff_ProcessStep_FromSpark is critical
 #df.drop(['ITuff_ExperimentType_FromSpark'], axis=1, inplace=True)      # ITuff_ExperimentType_FromSpark helps a little
-
-# %%
-print(df_filtered.shape[1])
-print(df_complete.shape[1])
-# %%
-df_filtered.info()
-
-# %%
-df_filtered = pd.get_dummies(df_filtered, columns =['ITuff_PartType_FromSpark'])
-df_filtered = pd.get_dummies(df_filtered, columns =['ITuff_ProcessStep_FromSpark'])
-df_filtered = pd.get_dummies(df_filtered, columns =['ITuff_ExperimentType_FromSpark'])
-
-df_complete = pd.get_dummies(df_complete, columns =['ITuff_PartType_FromSpark'])
-df_complete = pd.get_dummies(df_complete, columns =['ITuff_ProcessStep_FromSpark'])
-df_complete = pd.get_dummies(df_complete, columns =['ITuff_ExperimentType_FromSpark'])
-
-#df_filtered = pd.get_dummies(df_filtered, columns =['ITuff_BomGroup_FromSpark'])
-#df_filtered = pd.get_dummies(df_filtered, columns =['Family'])
-
 # %%
 df_filtered.info()
 
@@ -213,10 +206,10 @@ y = df_filtered.ITuff_PerUnit_testTimeInMS_Target
 y_complete = df_complete.ITuff_PerUnit_testTimeInMS_Target
 
 # %%
-print(df_filtered.shape[1])
-print(df_complete.shape[1])
+# print(df_filtered.shape[1])
+# print(df_complete.shape[1])
 # %%
-x_train, x_test, y_train, y_test = mods.train_test_split(x_complete, y_complete, test_size=0.30,random_state=101)
+x_train, x_test, y_train, y_test = mods.train_test_split(x, y, test_size=0.30,random_state=101)
 
 # %%
 from sklearn.linear_model import Ridge
@@ -236,23 +229,37 @@ model = XGBRegressor()
 # %%
 x_train_wo_LOT = x_train.drop(['ITuff_Lot_NA'], axis=1)
 x_test_wo_LOT = x_test.drop(['ITuff_Lot_NA'], axis=1)
+x_complete_wo_LOT = x_complete.drop(['ITuff_Lot_NA'], axis=1)
+
 
 # %%
 model.fit(x_train_wo_LOT, y_train)
 
 # %%
+# export coefficient to file
+model.save_model('C:/temp/model_parameters.model')
+
+# %%
+#model2 = XGBRegressor()
+#model2.load_model('C:/temp/model_parameters.model')
+
+# %%
 y_pred = model.predict(x_test_wo_LOT)
+#y_pred2 = model2.predict(x_test_wo_LOT)
 
 # %%
-x_complete_wo_LOT = x_complete.drop(['ITuff_Lot_NA'], axis=1)
-#y_pred_complete = model.predict(x_complete_wo_LOT)
+# check vectors are the same
+#y_pred == y_pred2
 
 # %%
-test_pred_df = pd.DataFrame({'vpo': x_complete_wo_LOT['ITuff_Lot_NA'],'y_test':y_test, 'y_pred': y_pred})
-test_pred_df.to_csv(file_name + '_withPred' + file_ext)
+y_pred_complete = model.predict(x_complete_wo_LOT)
 
-#test_pred_df_complete = pd.DataFrame({'vpo': x_complete['ITuff_Lot_NA'],'y_test':y_complete, 'y_pred': y_pred_complete})
-#test_pred_df_complete.to_csv(file_name + '_withPredComplete' + file_ext)
+# %%
+# test_pred_df = pd.DataFrame({'vpo': x['ITuff_Lot_NA'],'y_test':y, 'y_pred': y_pred_complete})
+# test_pred_df.to_csv(file_name + '_withPred' + file_ext)
+
+test_pred_df_complete = pd.DataFrame({'vpo': x_complete['ITuff_Lot_NA'],'y_test':y_complete, 'y_pred': y_pred_complete})
+test_pred_df_complete.to_csv(file_name + '_withPredComplete' + file_ext)
 
 # %%
 y_check = y_pred / y_test * 100
