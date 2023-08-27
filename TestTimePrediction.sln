@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestTimePrediction", "TestTimePrediction\TestTimePrediction.csproj", "{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrepareTrainingData", "PrepareTrainingData\PrepareTrainingData.csproj", "{E7A1DC9C-BEA6-45FC-8FAB-C2C5DF456201}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectToPython", "ConnectToPython\ConnectToPython.csproj", "{D06432FD-0738-4D93-81AB-915339E68599}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PredictTestTimeWrapper", "PredictTestTime\PredictTestTimeWrapper.csproj", "{FF8E9C5F-E2A6-4EB7-8230-81E171029013}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{386A2D4A-3EE8-4E6C-8F8F-6D31B336F1F7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D06432FD-0738-4D93-81AB-915339E68599}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D06432FD-0738-4D93-81AB-915339E68599}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D06432FD-0738-4D93-81AB-915339E68599}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D06432FD-0738-4D93-81AB-915339E68599}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7A1DC9C-BEA6-45FC-8FAB-C2C5DF456201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7A1DC9C-BEA6-45FC-8FAB-C2C5DF456201}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7A1DC9C-BEA6-45FC-8FAB-C2C5DF456201}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7A1DC9C-BEA6-45FC-8FAB-C2C5DF456201}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF8E9C5F-E2A6-4EB7-8230-81E171029013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF8E9C5F-E2A6-4EB7-8230-81E171029013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF8E9C5F-E2A6-4EB7-8230-81E171029013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF8E9C5F-E2A6-4EB7-8230-81E171029013}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

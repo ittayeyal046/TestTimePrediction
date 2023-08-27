@@ -236,8 +236,8 @@ x_complete_wo_LOT = x_complete.drop(['ITuff_Lot_NA'], axis=1)
 model.fit(x_train_wo_LOT, y_train)
 
 # %%
-# export coefficient to file
-model.save_model('C:/temp/model_parameters.model')
+# export model coefficient to file
+model.save_model('C:/TTP/model_parameters.model')
 
 # %%
 #model2 = XGBRegressor()
