@@ -10,7 +10,7 @@ import sklearn.tree as st
 
 
 # %%
-file_name = 'c:/temp/TestPredictionResults/TestPredictionResults_23-05-07_08-51-44'
+file_name = 'c:/temp/TTP/TestPredictionResults_23-05-07_08-51-44'
 file_ext = '.csv'
 df=pd.read_csv(file_name + file_ext)
 
