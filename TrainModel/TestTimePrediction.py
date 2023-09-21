@@ -1,7 +1,7 @@
 # %%
 import pandas as pd
 import numpy as np
-import seaborn as sb
+#import seaborn as sb
 import pylab as py
 import matplotlib.pyplot as plt
 import sklearn.model_selection as mods
@@ -99,7 +99,6 @@ total = len(df['ITuff_PerUnit_testTimeInMS_Target'])
 
 filtered_by_min_and_max = df[(df['ITuff_PerUnit_testTimeInMS_Target'] > max_time) | (df['ITuff_PerUnit_testTimeInMS_Target']< min_time)]
 count = len(filtered_by_min_and_max)
-#print(len(df[df['ITuff_PerUnit_testTimeInMS_Target'] > max_time]))
 
 categories = ['between '+str(min_time) + ' and ' +str(max_time), 'other']
 values = [total-count, count]
@@ -147,7 +146,8 @@ df_w_dummies.groupby('IsConcurrent').count()
 
 
 # %%
-df_w_dummies.groupby('ITuff_PerUnit_IsPassed_Target_NA').count()
+#amountOfIsPassed = df_w_dummies.groupby('ITuff_PerUnit_IsPassed_Target_NA').count()
+#print(amountOfIsPassed)
 
 # %%
 df_w_dummies.info()
@@ -161,15 +161,15 @@ df_w_dummies.info()
 #filtering
 
 # drop below min and above max
-df_wo_minMax = df_w_dummies.drop(filtered_by_min_and_max.index)
+df_w_dummies_wo_minMax = df_w_dummies.drop(filtered_by_min_and_max.index)
 
-df_filtered = df_wo_minMax.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
-df_filtered = df_filtered.drop(['Family'], axis=1)                               # 'Family' doesn’t change result
-df_filtered = df_filtered.drop(['ITuff_BomGroup_FromSpark'], axis=1)
+df_w_dummies_wo_minMax = df_w_dummies_wo_minMax.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
+df_w_dummies_wo_minMax = df_w_dummies_wo_minMax.drop(['Family'], axis=1)                               # 'Family' doesn’t change result
+df_w_dummies_wo_minMax = df_w_dummies_wo_minMax.drop(['ITuff_BomGroup_FromSpark'], axis=1)
 
-df_complete = df_w_dummies.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
-df_complete = df_complete.drop(['Family'], axis=1)                               # 'Family' doesn’t change result
-df_complete = df_complete.drop(['ITuff_BomGroup_FromSpark'], axis=1)
+df_w_dummies_w_minMax = df_w_dummies.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
+df_w_dummies_w_minMax = df_w_dummies_w_minMax.drop(['Family'], axis=1)                               # 'Family' doesn’t change result
+df_w_dummies_w_minMax = df_w_dummies_w_minMax.drop(['ITuff_BomGroup_FromSpark'], axis=1)
 
 #df.drop(['ConcurrentFlows_Count'], axis=1, inplace=True)                # ConcurrentFlows_Count doesn't change result
 #df.drop(['IsConcurrent'], axis=1, inplace=True)                         # 'IsConcurrent' doesn’t change result
@@ -179,37 +179,22 @@ df_complete = df_complete.drop(['ITuff_BomGroup_FromSpark'], axis=1)
 #df.drop(['ITuff_ProcessStep_FromSpark'], axis=1, inplace=True)         # ITuff_ProcessStep_FromSpark is critical
 #df.drop(['ITuff_ExperimentType_FromSpark'], axis=1, inplace=True)      # ITuff_ExperimentType_FromSpark helps a little
 # %%
-df_filtered.info()
+df_w_dummies_wo_minMax.info()
 
 # %%
-df_filtered.describe()
+df_w_dummies_wo_minMax.describe()
 
 # %%
-#df_filtered.Family_RaptorLake.value_counts()
-
-# %%
-#sb.pairplot(df_filtered,hue='ITuff_PerUnit_testTimeInMS_Target',)
-
-# %%
-#plt.hist(df['ITuff_PerUnit_testTimeInMS_Target'])
-#plt.show()
-
-# %%
-#sb.displot(df_filtered['ITuff_PerUnit_testTimeInMS_Target']) 
-
-# %%
-x = df_filtered.drop(['ITuff_PerUnit_testTimeInMS_Target'],axis=1)
-x_complete = df_complete.drop(['ITuff_PerUnit_testTimeInMS_Target'],axis=1)
+x_wo_minMax = df_w_dummies_wo_minMax.drop(['ITuff_PerUnit_testTimeInMS_Target'],axis=1)
+x_w_minMax = df_w_dummies_w_minMax.drop(['ITuff_PerUnit_testTimeInMS_Target'],axis=1)
 
 #y = pd.DataFrame({'ITuff_PerUnit_testTimeInMS_Target':df_filtered.ITuff_PerUnit_testTimeInMS_Target ,'Index':df_filtered['Index']})
-y = df_filtered.ITuff_PerUnit_testTimeInMS_Target
-y_complete = df_complete.ITuff_PerUnit_testTimeInMS_Target
+y_wo_minMax = df_w_dummies_wo_minMax.ITuff_PerUnit_testTimeInMS_Target
+y_w_minMax = df_w_dummies_w_minMax.ITuff_PerUnit_testTimeInMS_Target
 
 # %%
-# print(df_filtered.shape[1])
-# print(df_complete.shape[1])
-# %%
-x_train, x_test, y_train, y_test = mods.train_test_split(x, y, test_size=0.30,random_state=101)
+x_train, x_test, y_train, y_test = mods.train_test_split(x_wo_minMax, y_wo_minMax, test_size=0.30,random_state=101)
+#x_train, x_test, y_train, y_test = mods.train_test_split(x_w_minMax, y_w_minMax, test_size=0.30,random_state=101)
 
 # %%
 from sklearn.linear_model import Ridge
@@ -229,7 +214,7 @@ model = XGBRegressor()
 # %%
 x_train_wo_LOT = x_train.drop(['ITuff_Lot_NA'], axis=1)
 x_test_wo_LOT = x_test.drop(['ITuff_Lot_NA'], axis=1)
-x_complete_wo_LOT = x_complete.drop(['ITuff_Lot_NA'], axis=1)
+x_w_minMax_wo_LOT = x_w_minMax.drop(['ITuff_Lot_NA'], axis=1)
 
 
 # %%
@@ -248,18 +233,14 @@ y_pred = model.predict(x_test_wo_LOT)
 #y_pred2 = model2.predict(x_test_wo_LOT)
 
 # %%
-# check vectors are the same
-#y_pred == y_pred2
+y_pred_w_minMax = model.predict(x_w_minMax_wo_LOT)
 
 # %%
-y_pred_complete = model.predict(x_complete_wo_LOT)
-
-# %%
-# test_pred_df = pd.DataFrame({'vpo': x['ITuff_Lot_NA'],'y_test':y, 'y_pred': y_pred_complete})
+# test_pred_df = pd.DataFrame({'vpo': x['ITuff_Lot_NA'],'y_test':y, 'y_pred': y_pred_w_minMax})
 # test_pred_df.to_csv(file_name + '_withPred' + file_ext)
 
-test_pred_df_complete = pd.DataFrame({'vpo': x_complete['ITuff_Lot_NA'],'y_test':y_complete, 'y_pred': y_pred_complete})
-test_pred_df_complete.to_csv(file_name + '_withPredComplete' + file_ext)
+test_pred_df_w_minMax = pd.DataFrame({'vpo': x_w_minMax['ITuff_Lot_NA'],'y_test':y_w_minMax, 'y_pred': y_pred_w_minMax})
+test_pred_df_w_minMax.to_csv(file_name + '_withPredComplete' + file_ext)
 
 # %%
 y_check = y_pred / y_test * 100
@@ -279,10 +260,11 @@ y_check_percentage = counts / len(y_check) * 100
 
 labels = [f'{ranges[i]}-{ranges[i+1]}' for i in range(len(ranges)-1)]
 plt.bar(labels, y_check_percentage)
-plt.xlabel('Accuracy between predicted/actual', fontsize=8)
-plt.ylabel('Percentage of the tests')
+plt.xlabel('Accuracy between predicted/actual (%)', fontsize=8)
+plt.ylabel('Percentage of the tests (%)')
 #plt.title('Accuracy of prediction')
 plt.xticks(rotation=45, ha='center')
+plt.gca().set_yticklabels(['{:.0f}%'.format(x*1) for x in plt.gca().get_yticks()])
 
 print(y_check_percentage)
 
@@ -335,6 +317,3 @@ for i, v in enumerate(values):
 plt.show()
 
 # %%
-
-
-
