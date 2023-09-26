@@ -3,6 +3,14 @@ import json
 
 # read input data
 
+# read train data
+
+# combine train and input records
+
+# create dummies
+
+# remove train data
+
 # load model parameters
 #model2 = XGBRegressor()
 #model2.load_model('C:/temp/model_parameters.model')
