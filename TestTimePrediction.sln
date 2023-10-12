@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrepareTrainingData", "Prep
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PredictTestTimeWrapper", "PredictTestTime\PredictTestTimeWrapper.csproj", "{FF8E9C5F-E2A6-4EB7-8230-81E171029013}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TrainModel", "TrainModel", "{FB6BF936-CBCA-4F60-956E-5F1B55B52BE9}"
+	ProjectSection(SolutionItems) = preProject
+		TrainModel\TestTimePrediction.py = TrainModel\TestTimePrediction.py
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

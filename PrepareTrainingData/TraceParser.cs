@@ -1,21 +1,18 @@
 ﻿using System.Diagnostics;
 using Serilog;
-using Trace.Api.Common.TP;
 using Trace.Api.Common;
+using Trace.Api.Common.Helpers;
 using Trace.Api.Common.Ituff;
+using Trace.Api.Common.TP;
 using Trace.Api.Configuration;
+using Trace.Api.Services.BinSwitch;
+using Trace.Api.Services.BinSwitch.Interfaces;
+using Trace.Api.Services.Cache;
 using Trace.Api.Services.Common;
 using Trace.Api.Services.TestProgramParser;
 using Trace.Api.Services.TestProgramParser.Interfaces;
 using Trace.Api.Services.TestResults.ItuffIndex;
-using Trace.Api.Common.BinSwitch.FlowDiagram;
-using Trace.Api.Common.Helpers;
-using Trace.Api.Services.BinSwitch;
-using Trace.Api.Services.BinSwitch.Interfaces;
-using Trace.Api.Services.Cache;
-using Torch.CodeAnalysis.Workspace.Services.Cache;
 using Trace.Api.Services.TestResults.TestTime;
-using Serilog.Core;
 
 namespace TestTimePrediction;
 
@@ -41,12 +38,13 @@ public class TraceParser
         // now we need an instance to a test program parser
         // first we create the factory and ask it for a parser for the relevant test program type            
         var parserFactory = new TestProgramParserFactory(driveMapping);
+        var parserFlag = /*EnumTpParserFlag.PgmRules | EnumTpParserFlag.UserVarsAndTosRules | EnumTpParserFlag.LocationSets | EnumTpParserFlag.Ph*/EnumTpParserFlag.Basic;
 
         TestProgram testProgram = null;
         try
         {
             // parse the TP & ask for Plists    
-            testProgram = parserFactory.ParseTestProgram(stplPath, tplPath);
+            testProgram = parserFactory.ParseTestProgram(stplPath, tplPath, parserFlag);
         }
         catch (Exception ex)
         {
@@ -57,7 +55,7 @@ public class TraceParser
             sw.Stop();
             logger.Information($"End TestProgram parsing in {sw.Elapsed}");
         }
-        
+
         return testProgram;
     }
 
@@ -77,7 +75,7 @@ public class TraceParser
         using (var ituffIndexManager = new ItuffIndexManager(fileService))
         {
             // for the sample take the first ituff
-            
+
             ituffDefinitionList = ituffIndexManager
                 .GetAllItuffDefinitions()
                 .Cast<ClassItuffDefinition>()
@@ -161,7 +159,7 @@ public class TraceParser
             if (lotTestTimeData == null)
             {
                 logger.Error("Failed to create test time data in that lot");
-                return new []{("NA", (false, TimeSpan.Zero))};
+                return new[] { ("NA", (false, TimeSpan.Zero)) };
             }
 
             var unitsIdIsPassed = lotTestTimeData.UnitsExtraData
