@@ -1,0 +1,175 @@
+{
+  "TestProgramData": {
+    "BaseTestProgramName": "BaseTestProgramNameupdated",
+    "ProgramFamily": "ProgramFamilyupdated",
+    "ProgramSubFamily": "ProgramSubFamilyupdated",
+    "StplDirectory": "\\\\amr.corp.intel.com\\ThisIs\\updated",
+    "TestProgramRootDirectory": "\\\\amr.corp.intel.com\\ThisIs\\updated",
+    "DirectoryChecksum": "DirectoryChecksum"
+  },
+  "Experiments": [
+    {
+      "BomGroupName": "BomGroup9",
+      "Step": "A2",
+      "TplFileName": "TplFileName",
+      "StplFileName": "StplFileName",
+      "EnvironmentFileName": "EnvironmentFileName",
+      "ExperimentState": 1,
+      "PlistAllFileName": "PlistAllFileName",
+      "TestTimeInSecPerUnit": 100,
+      "Vpo": "SomeVpoToMakeItWork",
+      "Material": {
+        "MaterialIssue": { "MaterialIssueIsRequired": true },
+        "Units": [
+          {
+            "VisualId": "VisualId11",
+            "Lot": "LotName",
+            "PartType": "HH 6HY789 A J",
+            "OriginalPartType": "HH 6HY789 A R",
+            "Lab": "LabName",
+            "Location": {
+              "LocationType": "LocationType",
+              "LocationName": "LocationName"
+            }
+          }
+        ],
+        "Lots": [
+          {
+            "Name": "LotName",
+            "NumberOfUnitsToRun": 1,
+            "PartType": "HH 6HY789 A J",
+            "OriginalPartType": "HH 6HY789 A R",
+            "Lab": "LabName",
+            "Locations": [
+              {
+                "Quantity": 1,
+                "LocationType": "LocationType",
+                "LocationName": "LocationName"
+              }
+            ]
+          }
+        ],
+        "Sspec": null
+      },
+      "ConditionsWithResults": [],
+      "Conditions": [
+        {
+          "LocationCode": "19",
+          "Thermals": [
+            {
+              "Name": "HOT",
+              "SequenceId": 1,
+              "IsByPassed": false
+            }
+          ],
+          "EngineeringId": "9A",
+          "SequenceId": 1,
+          "Comment": "A simple comment for condition",
+          "FuseEnabled": false,
+          "DieSelection": "DummyDieSelection",
+          "MoveUnits": "Rejects",
+          "Fuse": {
+            "FuseType": "OneStep",
+            "Lrf": {
+              "FuseReleaseRevision": 5,
+              "FuseReleaseName": "DummyRelease",
+              "BinQdfs": [
+                {
+                  "PassBin": 1002,
+                  "PlanningBin": "AB",
+                  "Qdf": "DADD"
+                }
+              ]
+            },
+            "Qdf": null
+          },
+          "VpoCustomSuffix": null,
+          "customAttributes": []
+        },
+        {
+          "LocationCode": "6987",
+          "Thermals": [
+            {
+              "Name": "HOT",
+              "SequenceId": 1,
+              "IsByPassed": false
+            }
+          ],
+          "EngineeringId": "9A",
+          "SequenceId": 2,
+          "Comment": "some custom comment here",
+          "FuseEnabled": false,
+          "DieSelection": "DummyDieSelection",
+          "MoveUnits": "Good",
+          "Fuse": null,
+          "VpoCustomSuffix": "RA",
+          "customAttributes": []
+        },
+        {
+          "LocationCode": "6987",
+          "Thermals": [
+            {
+              "Name": "HOT",
+              "SequenceId": 1,
+              "IsByPassed": false
+            }
+          ],
+          "EngineeringId": "9A",
+          "SequenceId": 3,
+          "Comment": "some custom comment here2222222",
+          "FuseEnabled": false,
+          "DieSelection": "DummyDieSelection",
+          "MoveUnits": "All",
+          "Fuse": null,
+          "VpoCustomSuffix": null,
+          "customAttributes": []
+        },
+        {
+          "LocationCode": "6987",
+          "Thermals": [
+            {
+              "Name": "HOT",
+              "SequenceId": 1,
+              "IsByPassed": false
+            }
+          ],
+          "EngineeringId": "9A",
+          "SequenceId": 4,
+          "Comment": "some custom comment here22222223",
+          "FuseEnabled": false,
+          "DieSelection": "DummyDieSelection",
+          "MoveUnits": "Rejects",
+          "Fuse": null,
+          "VpoCustomSuffix": "RB",
+          "customAttributes": [
+            {
+              "attributeName": "someName",
+              "attributeValue": "someValue"
+            }
+          ]
+        }
+      ],
+      "SequenceId": 1234,
+      "DisplayName": "BaseTestProgramName - BomGroup9 A2",
+      "RetestRate": 50,
+      "FlexbomHri": "DEFAULT_HRI",
+      "FlexbomMrv": "000000000000",
+      "ExperimentType": "Engineering",
+      "ActivityType": "ModuleValidation",
+      "Recipe": {
+        "RecipeSource": "TpGenerated",
+        "RecipePath": ""
+      },
+      "ExperimentSplitId": null,
+      "Tags": [ "tag1", "tag2" ],
+      "Description": "this is just a simple description",
+      "ContactEmails": [ "contact@intel.com", "contact2@intel.com" ]
+    }
+  ],
+  "Wwid": 1234,
+  "Username": "username1",
+  "Segment": "C2DG",
+  "Team": "CIFT",
+  "DisplayName": "This is just a simple validation item.",
+  "DisplayNameSource": "SparkProvided"
+}

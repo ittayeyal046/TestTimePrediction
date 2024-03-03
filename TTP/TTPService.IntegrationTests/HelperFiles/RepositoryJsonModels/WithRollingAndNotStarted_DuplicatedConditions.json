@@ -1,0 +1,359 @@
+{
+  "Id": "00000000-0000-0000-0000-000000000000",
+  "Username": "user1",
+  "TestProgramData": {
+    "BaseTestProgramName": "BaseTestProgramName1",
+    "ProgramFamily": "ProgramFamily1",
+    "ProgramSubFamily": "ProgramSubFamily1",
+    "StplDirectory": "TestProgramUncPath1",
+    "DirectoryChecksum": "checksuc5116b87mValc5116b87ue",
+    "TestProgramRootDirectory": "TestProgramRootDirectory"
+  },
+  "Experiments": [
+    {
+      "Id": "00000000-0000-0000-0000-000000000000",
+      "ExperimentSplitId": "c5116b87-efdd-4310-9047-488b81ffb06e",
+      "ExperimentType": "Engineering",
+      "ActivityType": "MassiveValidation",
+      "IsArchived": false,
+      "ExperimentState": "Ready",
+      "BomGroupName": "BomGroup11",
+      "Step": "Step11",
+      "TplFileName": "TplFileName11",
+      "StplFileName": "StplFileName11",
+      "EnvironmentFileName": "EnvironmentFileName11",
+      "PlistAllFileName": "PlistAllFileName11",
+      "TestTimeInSecPerUnit": 25,
+      "RetestRate": 50,
+      "FlexbomHri": "DEFAULT_HRI",
+      "FlexbomMrv": "000000000008",
+      "Material": {
+        "MaterialIssue": {
+          "MaterialIssueIsRequired": false,
+          "MaterialIssueErrorComments": "just for testing, please ignore."
+        },
+        "Units": [
+          {
+            "VisualId": "VisualId11",
+            "Lot": "Name111",
+            "PartType": "Bom111",
+            "OriginalPartType": null,
+            "Lab": "Lab1",
+            "Location": {
+              "LocationType": "LocationType",
+              "LocationName": "LocationName"
+            }
+          },
+          {
+            "VisualId": "VisualId12",
+            "Lot": "Name111",
+            "PartType": "Bom111",
+            "OriginalPartType": null,
+            "Lab": "Lab1",
+            "Location": {
+              "LocationType": "LocationType1",
+              "LocationName": "LocationName1"
+            }
+          },
+          {
+            "VisualId": "VisualId121",
+            "Lot": "Name112",
+            "PartType": "Bom112",
+            "OriginalPartType": null,
+            "Lab": "Lab1",
+            "Location": {
+              "LocationType": "LocationType2",
+              "LocationName": "LocationName2"
+            }
+          }
+        ],
+        "Lots": [
+          {
+            "Name": "Name111",
+            "NumberOfUnitsToRun": 1,
+            "PartType": "Bom111",
+            "OriginalPartType": "BOMABCD",
+            "Lab": "Lab1",
+            "Locations": [
+              {
+                "Quantity": 2,
+                "LocationType": "LocationType",
+                "LocationName": "LocationName"
+              }
+            ]
+          },
+          {
+            "Name": "Name112",
+            "NumberOfUnitsToRun": 1,
+            "PartType": "Bom112",
+            "OriginalPartType": "BOMABCD",
+            "Lab": "Lab2",
+            "Locations": [
+              {
+                "Quantity": 3,
+                "LocationType": "LocationType1",
+                "LocationName": "LocationName1"
+              }
+            ]
+          }
+        ],
+        "Sspec": "ABCD",
+        "MaterialIsDefined": true,
+        "HasMaterialIssueFailure": false
+      },
+      "SequenceId": 0,
+      "Vpo": "vpo1",
+      "Stages": [
+        {
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "StageType": "Class",
+          "SequenceId": "1",
+          "StageData": {
+            "Conditions": [
+              {
+                "Id": "00000000-0000-0000-0000-000000000000",
+                "SubmissionTime": "2022-04-09T03:04:20.550Z",
+                "ModificationTime": "2022-04-09T03:06:20.550Z",
+                "CompletionTime": "2022-04-10T03:04:20.550Z",
+                "LocationCode": "6262",
+                "Thermals": [
+                  {
+                    "Name": "Thermal12",
+                    "SequenceId": 1,
+                    "IsByPassed": false
+                  }
+                ],
+                "EngineeringId": "EngineeringId11",
+                "Status": "Committed",
+                "StatusChangeComment": "to committed",
+                "Results": {
+                  "NumberOfGoodBins": 5,
+                  "NumberOfBadBins": 63
+                },
+                "Comment": "sample file",
+                "SequenceId": 0,
+                "FuseEnabled": true,
+                "DieSelection": "SS",
+                "MoveUnits": "Rejects",
+                "Fuse": {
+                  "FuseType": "OneStep",
+                  "Lrf": {
+                    "FuseReleaseRevision": 12,
+                    "FuseReleaseName": "testing fuse name",
+                    "BinQdfs": [
+                      {
+                        "PassBin": 1001,
+                        "PlanningBin": "test",
+                        "Qdf": "RSDA"
+                      }
+                    ]
+                  }
+                },
+                "VpoCustomSuffix": "RA",
+                "CustomAttributes": []
+              },
+              {
+                "Id": "00000000-0000-0000-0000-000000000000",
+                "SubmissionTime": "2019-04-01T19:00:00Z",
+                "ModificationTime": "2019-04-01T20:00:00Z",
+                "CompletionTime": "2019-04-01T21:00:00Z",
+                "LocationCode": "6262",
+                "Thermals": [
+                  {
+                    "Name": "Thermal12",
+                    "SequenceId": 1,
+                    "IsByPassed": false
+                  }
+                ],
+                "EngineeringId": "EngineeringId12",
+                "Status": "Paused",
+                "StatusChangeComment": null,
+                "Results": null,
+                "Comment": null,
+                "SequenceId": 0,
+                "FuseEnabled": null,
+                "DieSelection": null,
+                "MoveUnits": null,
+                "Fuse": null,
+                "VpoCustomSuffix": null,
+                "CustomAttributes": []
+              }
+            ]
+          }
+        }
+      ],
+      "Recipe": {
+        "RecipePath": "dummyRecipePath",
+        "RecipeSource": "Custom"
+      },
+      "Tags": [ "tag1", "tad2" ],
+      "Description": "this is a dummy description for test",
+      "ContactEmails": [ "someemail@intel.com", "anotheremail@intel.com" ],
+      "HasStarted": true,
+      "DisplayName": "A beatiful and meaningful name",
+      "HasMaterialIssueFailure": true,
+      "HasMaterialIssue": true
+    },
+    {
+      "Id": "00000000-0000-0000-0000-000000000000",
+      "ExperimentSplitId": "c5116b87-efdd-4310-9047-488b81ffb06e",
+      "ExperimentType": "Engineering",
+      "ActivityType": null,
+      "IsArchived": false,
+      "ExperimentState": 0,
+      "BomGroupName": "BomGroup12",
+      "Step": "Step12",
+      "TplFileName": "TplFileName12",
+      "StplFileName": "StplFileName12",
+      "EnvironmentFileName": "EnvironmentFileName12",
+      "PlistAllFileName": "PlistAllFileName12",
+      "TestTimeInSecPerUnit": 200,
+      "RetestRate": 0,
+      "FlexbomHri": null,
+      "FlexbomMrv": null,
+      "Material": {
+        "MaterialIssue": null,
+        "Units": [
+          {
+            "VisualId": "VisualId21",
+            "Lot": "Name211",
+            "PartType": "Bom211",
+            "OriginalPartType": null,
+            "Lab": "Lab1",
+            "Location": {
+              "LocationType": "LocationType1",
+              "LocationName": "LocationName1"
+            }
+          },
+          {
+            "VisualId": "VisualId221",
+            "Lot": "Name212",
+            "PartType": "Bom212",
+            "OriginalPartType": null,
+            "Lab": "Lab1",
+            "Location": {
+              "LocationType": "LocationType2",
+              "LocationName": "LocationName2"
+            }
+          }
+        ],
+        "Lots": [
+          {
+            "Name": "Name211",
+            "NumberOfUnitsToRun": 1,
+            "PartType": "Bom211",
+            "OriginalPartType": null,
+            "Lab": "Lab1",
+            "Locations": [
+              {
+                "Quantity": 1,
+                "LocationType": "LocationType1",
+                "LocationName": "LocationName1"
+              }
+            ]
+          },
+          {
+            "Name": "Name212",
+            "NumberOfUnitsToRun": 1,
+            "PartType": "Bom212",
+            "OriginalPartType": null,
+            "Lab": "Lab2",
+            "Locations": [
+              {
+                "Quantity": 1,
+                "LocationType": "LocationType2",
+                "LocationName": "LocationName2"
+              }
+            ]
+          }
+        ],
+        "Sspec": null,
+        "MaterialIsDefined": true,
+        "HasMaterialIssueFailure": false
+      },
+      "SequenceId": 0,
+      "Vpo": null,
+      "Stages": [
+        {
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "StageType": "Class",
+          "SequenceId": "1",
+          "StageData": {
+            "Conditions": [
+              {
+                "Id": "00000000-0000-0000-0000-000000000000",
+                "SubmissionTime": "2022-04-09T03:04:20.551Z",
+                "ModificationTime": "2022-04-10T03:04:20.550Z",
+                "CompletionTime": "2022-04-10T03:04:20.550Z",
+                "LocationCode": "6262",
+                "Thermals": [
+                  {
+                    "Name": "Thermal13",
+                    "SequenceId": 1,
+                    "IsByPassed": false
+                  }
+                ],
+                "EngineeringId": "EngineeringId12",
+                "Status": "Completed",
+                "StatusChangeComment": null,
+                "Results": null,
+                "Comment": null,
+                "SequenceId": 0,
+                "FuseEnabled": null,
+                "DieSelection": null,
+                "MoveUnits": "All",
+                "Fuse": null,
+                "VpoCustomSuffix": null,
+                "CustomAttributes": []
+              },
+              {
+                "Id": "00000000-0000-0000-0000-000000000000",
+                "SubmissionTime": "2019-04-02T19:00:00Z",
+                "ModificationTime": "2019-04-02T20:00:00Z",
+                "CompletionTime": "2019-04-02T21:00:00Z",
+                "LocationCode": "6261",
+                "Thermals": [
+                  {
+                    "Name": "Thermal14",
+                    "SequenceId": 1,
+                    "IsByPassed": false
+                  }
+                ],
+                "EngineeringId": "EngineeringId14",
+                "Status": "Committed",
+                "StatusChangeComment": null,
+                "Results": null,
+                "Comment": null,
+                "SequenceId": 0,
+                "FuseEnabled": null,
+                "DieSelection": null,
+                "MoveUnits": null,
+                "Fuse": null,
+                "VpoCustomSuffix": null,
+                "CustomAttributes": []
+              }
+            ]
+          }
+        }
+      ],
+      "Recipe": {
+        "RecipeSource": "TpGenerated"
+      },
+      "Tags": [],
+      "Description": null,
+      "ContactEmails": [],
+      "HasStarted": true,
+      "DisplayName": null,
+      "HasMaterialIssueFailure": false,
+      "HasMaterialIssue": false
+    }
+  ],
+  "WasSubmittedToQueue": true,
+  "Wwid": 1235645,
+  "Segment": "test",
+  "Team": "spark",
+  "IdUserString": "Id: 00000000-0000-0000-0000-000000000000, username: user1",
+  "IsCompleted": false,
+  "DisplayName": "experiment group level name",
+  "DisplayNameSource": "SparkProvided"
+}
