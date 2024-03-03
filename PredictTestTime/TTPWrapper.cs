@@ -40,7 +40,6 @@ namespace PredictTestTimeWrapper
 
             // Read the output of the Python process
             string output = process.StandardOutput.ReadToEnd();
-            // string output = "!!";
             process.WaitForExit();
 
             if (output == null)

@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 import sklearn.model_selection as mods
 import sklearn.linear_model as sklin
 import sklearn.tree as st
-
+import os;
 
 # %%
-file_name = 'c:/temp/TTP/TestPredictionResults_23-05-07_08-51-44'
+file_name = 'ITuffProcessedData_24-03-02_05-13-06_temp.csv'
 file_ext = '.csv'
-df=pd.read_csv(file_name + file_ext)
+file_path = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
+df=pd.read_csv(os.path.join(file_path, file_name, file_ext)
 
 # %%
 df.head()
