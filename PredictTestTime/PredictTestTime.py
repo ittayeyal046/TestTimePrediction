@@ -27,13 +27,10 @@ import json
 #for i, arg in enumerate(sys.argv[1:], start=1):
 #    print(f"Argument {i}: {arg}")
 
-data = {
-    "name": sys.argv[1],
-    "id": sys.argv[2]
-}
+#_arg = '{"Name":"ittay","Id":"1234567"}'
+#print(sys.argv[1])
 
-# Serialize the dictionary to a JSON string
-json_string = json.dumps(data, indent=4)  # The 'indent' parameter adds indentation for readability
+parsed_dict = json.loads(sys.argv[1])
 
 # Print the JSON string
-print(json_string)
+print(parsed_dict)
