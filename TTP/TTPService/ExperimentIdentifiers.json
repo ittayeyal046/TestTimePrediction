@@ -1,0 +1,9 @@
+﻿{
+  "ExperimentIdentifiers": {
+    "ExperimentToPossibleActivityTypesMapping": {
+      "Engineering": [ "ModuleValidation", "RejectValidation", "MassiveValidation", "Engineering" ],
+      "Correlation": [ "Correlation" ],
+      "WalkTheLot": [ "WalkTheLot" ]
+    }
+  }
+}

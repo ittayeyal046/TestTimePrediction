@@ -1,0 +1,14 @@
+---
+# this manifest deploys developer service
+applications:
+- name: test-time-prediction-integration
+  memory: 512M
+  buildpack: https://github.com/cloudfoundry/dotnet-core-buildpack
+  disk_quota: 1024M
+  health-check-type: port
+  instances: 1
+  stack: cflinuxfs4
+  timeout: 80
+  env:
+    RLS_ENV: Integration
+    ASPNETCORE_ENVIRONMENT: Integration
