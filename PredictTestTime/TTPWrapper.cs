@@ -18,7 +18,7 @@ namespace PredictTestTimeWrapper
             this.pythonExePath = pythonExePath;
         }
 
-        public IDictionary<string, string> Predict(IDictionary<string, string> parametersDictionary)
+        public TimeSpan Predict(IDictionary<string, string> parametersDictionary)
         {
             // Path to the Python script you want to run
             string pythonScript = @"PredictTestTime.py";
@@ -45,19 +45,8 @@ namespace PredictTestTimeWrapper
             if (output == null)
                 throw new InvalidDataException();
 
-            var ttpOutputDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(output);
-
-            if (ttpOutputDictionary != null)
-            {
-                Console.WriteLine($"Python output:");
-
-                foreach (var kvp in ttpOutputDictionary)
-                {
-                    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-                }
-            }
-
-            return ttpOutputDictionary;
+            var prediction = TimeSpan.FromSeconds(double.Parse(output));
+            return prediction;
         }
     }
 }

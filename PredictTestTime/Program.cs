@@ -14,7 +14,8 @@ namespace PythonProcessExample
             var input = new Dictionary<string, string>() { { "Name", "ittay" }, { "Id", "1234567" } };
             var ttpWrapper = new TTPWrapper(pythonExe);
             
-            ttpWrapper.Predict(input);
+            var result = ttpWrapper.Predict(input);
+            Console.WriteLine(result);
         }
     }
 }

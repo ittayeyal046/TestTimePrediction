@@ -10,10 +10,11 @@ import sklearn.tree as st
 import os;
 
 # %%
-file_name = 'ITuffProcessedData_24-03-02_05-13-06_temp.csv'
-file_ext = '.csv'
-file_path = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
-df=pd.read_csv(os.path.join(file_path, file_name, file_ext)
+file_name = 'TestPredictionResults_23-05-07_08-51-44'
+file_csv_ext = '.csv'
+trainingDataPath = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
+df=pd.read_csv(os.path.join(trainingDataPath, file_name + file_csv_ext))
+               
 
 # %%
 df.head()
@@ -223,7 +224,7 @@ model.fit(x_train_wo_LOT, y_train)
 
 # %%
 # export model coefficient to file
-model.save_model('C:/TTP/model_parameters.model')
+model.save_model(os.path.join(trainingDataPath, file_name + '.model'))
 
 # %%
 #model2 = XGBRegressor()
