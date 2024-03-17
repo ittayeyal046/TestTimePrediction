@@ -10,11 +10,22 @@ namespace PythonProcessExample
         static void Main(string[] args)
         {
             // Path to the Python executable
-            var pythonExe = @"C:\Python33\python.exe";
-            var input = new Dictionary<string, string>() { { "Name", "ittay" }, { "Id", "1234567" } };
+            var pythonExe = @"C:\ProgramData\Anaconda3\python.exe";
+            var parameters = new Dictionary<string, string>()
+            {
+                { "IsConcurrent", "True" }, 
+                { "Patterns_Count", "3000" }, 
+                { "Tests_Count", "1000" }, 
+                { "Mtt_Count", "100" }, 
+                { "ConcurrentFlows_Count", "5" }, 
+                { "Shmoo_tests_count", "10" }, 
+                { "PartType", "H64ADNSVAL" }, 
+                { "ProcessStep", "CLASSCOLD" }, 
+                { "ExperimentType", "Engineering" }
+            };
             var ttpWrapper = new TTPWrapper(pythonExe);
             
-            var result = ttpWrapper.Predict(input);
+            var result = ttpWrapper.Predict(parameters);
             Console.WriteLine(result);
         }
     }
