@@ -227,6 +227,14 @@ model.fit(x_train_wo_LOT, y_train)
 model.save_model(os.path.join(trainingDataPath, file_name + '.model'))
 
 # %%
+# export columns
+column_names = x_train_wo_LOT.columns.tolist()
+
+# Save the column names to a text file
+with open(os.path.join(trainingDataPath, file_name + '.columns', 'w') as file:
+    for column in column_names:
+        file.write(column + '\n')
+# %%
 #model2 = XGBRegressor()
 #model2.load_model('C:/temp/model_parameters.model')
 
@@ -242,7 +250,7 @@ y_pred_w_minMax = model.predict(x_w_minMax_wo_LOT)
 # test_pred_df.to_csv(file_name + '_withPred' + file_ext)
 
 test_pred_df_w_minMax = pd.DataFrame({'vpo': x_w_minMax['ITuff_Lot_NA'],'y_test':y_w_minMax, 'y_pred': y_pred_w_minMax})
-test_pred_df_w_minMax.to_csv(file_name + '_withPredComplete' + file_ext)
+test_pred_df_w_minMax.to_csv(file_name + '_withPredComplete' + file_csv_ext)
 
 # %%
 y_check = y_pred / y_test * 100
