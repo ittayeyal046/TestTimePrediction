@@ -10,7 +10,9 @@ namespace PythonProcessExample
         static void Main(string[] args)
         {
             // Path to the Python executable
+            //var pythonExe = @"C:\Users\ittayeya\AppData\Local\Programs\Python\Python312\python.exe";
             var pythonExe = @"C:\ProgramData\Anaconda3\python.exe";
+
             var parameters = new Dictionary<string, string>()
             {
                 { "IsConcurrent", "True" }, 

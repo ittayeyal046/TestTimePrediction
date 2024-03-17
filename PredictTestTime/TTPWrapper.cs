@@ -31,6 +31,7 @@ namespace PredictTestTimeWrapper
             {
                 FileName = $"{pythonExePath}",
                 Arguments = $"\"{Path.GetFullPath(".")}\\{pythonScript}\" \"{fixParametersForPython}\"",
+                WorkingDirectory = Path.GetDirectoryName(pythonExePath),
                 RedirectStandardOutput = true
             };
 

@@ -2,11 +2,6 @@
 import sys
 import json
 import pandas as pd
-import pylab as py
-import matplotlib.pyplot as plt
-import sklearn.model_selection as mods
-import sklearn.linear_model as sklin
-import sklearn.tree as st
 import os;
 from xgboost import XGBRegressor
 
