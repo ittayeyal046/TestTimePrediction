@@ -10,13 +10,21 @@ from xgboost import XGBRegressor
 
 # set Dummy fields
 def setDummyField(df, prefixColumnText, suffixCoulmnText):
+    any_column_that_suits = any(col.startswith(prefixColumnText) and
+                                col.endswith(suffixCoulmnText) for col in df.columns)
+    if(any_column_that_suits == False):
+         raise ValueError(f"Suffix {suffixCoulmnText} on columns {prefixColumnText} is not found")
+
+    # reset all relevant columns
     for column in df.columns:
         if column.startswith(prefixColumnText):
             df[column] = False
 
+    # set relevant column
     for column in df.columns:
         if column.endswith(suffixCoulmnText):
             df[column] = True
+            break
 ###############################
             
 #%%
@@ -42,6 +50,9 @@ df = df._append(pd.Series(False, index=df.columns), ignore_index=True)
 
 #%%
 # received from args
+if(len(sys.argv) != 1):
+    raise ValueError("Must have 1 argument of dictionary of the variables")
+
 parameters = sys.argv[1]
 parametersAsDictionary = json.loads(parameters)
 
