@@ -231,9 +231,10 @@ model.save_model(os.path.join(trainingDataPath, file_name + '.model'))
 column_names = x_train_wo_LOT.columns.tolist()
 
 # Save the column names to a text file
-with open(os.path.join(trainingDataPath, file_name + '.columns', 'w') as file:
+with open(os.path.join(trainingDataPath, file_name + '.columns'), 'w') as file:
     for column in column_names:
         file.write(column + '\n')
+        
 # %%
 #model2 = XGBRegressor()
 #model2.load_model('C:/temp/model_parameters.model')
