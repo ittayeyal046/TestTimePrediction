@@ -8,9 +8,9 @@ namespace TTPService.Models
     public interface ITtpModel
     {
         Task<Result<int, ErrorResult>> Predict(
-            string tpPath,
+            string stplPath,
+            string tplPath,
             string partType,
-            string bomGroup,
             string processStep,
             ExperimentType experimentType);
     }
