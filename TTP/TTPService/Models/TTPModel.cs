@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
+using PredictTestTimeWrapper;
 using Trace.Api.Common.TP;
 using TTPService.Enums;
 using TTPService.FunctionalExtensions;
@@ -35,7 +36,7 @@ namespace TTPService.Models
         {
             var testProgram = _traceParserHelper.ParseTP(stplPath, tplPath);
 
-            var data = new Dictionary<string, string>
+            var parametersDictionary = new Dictionary<string, string>
             {
                 ["IsConcurrent"] = testProgram?.IsConcurrent.ToString(),
                 ["Patterns_Count"] = testProgram?.Plists?.Where(p => p.Patterns != null)
@@ -51,9 +52,11 @@ namespace TTPService.Models
                 ["ITuff_ExperimentType_FromSpark"] = experimentType.ToString(),  // correlation / engineering / walkTheLot
             };
 
-            //TODO: ...
-            //var ttpWrapper = new TTPWrapper();
-            //...
+            // TODO: read pythonExePath from environment variable?;
+            // TODO: inject TTPWrapper to constructor & add interface;
+            var pythonExePath = "TODO: read from environment variable?";
+            var ttpWrapper = new TTPWrapper(pythonExePath);
+            var prediction = ttpWrapper.Predict(parametersDictionary);
 
             // 1. Get all the record data from trace API - as we did when we trained our model
             //  1.1 Do we fill the data from the trace API or from our .csv? if from .csv we need to add column of TP ?
@@ -61,7 +64,7 @@ namespace TTPService.Models
             // 3. Fill the record with the data
             // 4. Call the .py and return the result
 
-            return Result.Ok<int, ErrorResult>(500);
+            return Result.Ok<int, ErrorResult>(prediction.Seconds);
         }
     }
 }
