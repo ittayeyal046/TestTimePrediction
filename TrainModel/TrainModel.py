@@ -1,13 +1,14 @@
 # %%
 import pandas as pd
 import numpy as np
-#import seaborn as sb
-import pylab as py
+import matplotlib as matplotlib
 import matplotlib.pyplot as plt
 import sklearn.model_selection as mods
-import sklearn.linear_model as sklin
-import sklearn.tree as st
 import os;
+
+# %%
+# not show graphs (needed for cmd run)
+matplotlib.use('agg')
 
 # %%
 file_name = 'TestPredictionResults_23-05-07_08-51-44'
@@ -34,7 +35,7 @@ explode = (0.1, 0)  # explode the first slice
 
 # calculate the percentages and display them on the chart
 percentages = df1['Tests'] / df1['Tests'].sum() * 100
-labels = [f'{df1.index[i]}: {df1.Tests[i]:,.0f} ({percentages[i]:.1f}%)' for i in range(len(df1))]
+labels = [f'{df1.index[i]}: {df1.Tests.iloc[i]:,.0f} ({percentages[i]:.1f}%)' for i in range(len(df1))]
 ax.pie(df1['Tests'], explode=explode, labels=labels, autopct='', startangle=90)
 ax.axis('equal')
 
@@ -224,8 +225,17 @@ model.fit(x_train_wo_LOT, y_train)
 
 # %%
 # export model coefficient to file
-model.save_model(os.path.join(trainingDataPath, file_name + '.model'))
+model.save_model(os.path.join(trainingDataPath, file_name + '.model.json'))
 
+# %%
+# export columns
+column_names = x_train_wo_LOT.columns.tolist()
+
+# Save the column names to a text file
+with open(os.path.join(trainingDataPath, file_name + '.columns'), 'w') as file:
+    for column in column_names:
+        file.write(column + '\n')
+        
 # %%
 #model2 = XGBRegressor()
 #model2.load_model('C:/temp/model_parameters.model')
@@ -242,7 +252,7 @@ y_pred_w_minMax = model.predict(x_w_minMax_wo_LOT)
 # test_pred_df.to_csv(file_name + '_withPred' + file_ext)
 
 test_pred_df_w_minMax = pd.DataFrame({'vpo': x_w_minMax['ITuff_Lot_NA'],'y_test':y_w_minMax, 'y_pred': y_pred_w_minMax})
-test_pred_df_w_minMax.to_csv(file_name + '_withPredComplete' + file_ext)
+test_pred_df_w_minMax.to_csv(file_name + '_withPredComplete' + file_csv_ext)
 
 # %%
 y_check = y_pred / y_test * 100
@@ -266,7 +276,7 @@ plt.xlabel('Accuracy between predicted/actual (%)', fontsize=8)
 plt.ylabel('Percentage of the tests (%)')
 #plt.title('Accuracy of prediction')
 plt.xticks(rotation=45, ha='center')
-plt.gca().set_yticklabels(['{:.0f}%'.format(x*1) for x in plt.gca().get_yticks()])
+#plt.gca().set_yticklabels(['{:.0f}%'.format(x*1) for x in plt.gca().get_yticks()])
 
 print(y_check_percentage)
 

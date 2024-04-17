@@ -6,7 +6,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": ["ittay", "12345678"]                        
+            "args": ["{\"\"IsConcurrent\"\":\"\"True\"\", \"\"Patterns_Count\"\":\"\"100\"\", \"\"Tests_Count\"\":\"\"1000\"\", \"\"Mtt_Count\"\":\"\"50\"\", \"\"ConcurrentFlows_Count\"\":\"\"10\"\", \"\"Shmoo_tests_count\"\":\"\"20\"\", \"\"PartType\"\":\"\"H64ASLFVQ\"\", \"\"ProcessStep\"\":\"\"CLASSHOT\"\", \"\"ExperimentType\"\":\"\"Engineering\"\"}"]
         }
     ]
 }

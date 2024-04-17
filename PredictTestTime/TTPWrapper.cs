@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace PredictTestTimeWrapper
@@ -31,6 +26,7 @@ namespace PredictTestTimeWrapper
             {
                 FileName = $"{pythonExePath}",
                 Arguments = $"\"{Path.GetFullPath(".")}\\{pythonScript}\" \"{fixParametersForPython}\"",
+                WorkingDirectory = Path.GetDirectoryName(pythonExePath),
                 RedirectStandardOutput = true
             };
 
@@ -39,14 +35,25 @@ namespace PredictTestTimeWrapper
             process.Start();
 
             // Read the output of the Python process
-            string output = process.StandardOutput.ReadToEnd();
+            var outputLine = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
 
-            if (output == null)
+            if (outputLine == null)
                 throw new InvalidDataException();
 
-            var prediction = TimeSpan.FromSeconds(double.Parse(output));
-            return prediction;
+            string pattern = @"output:\s*(\d+)";
+            Match match = Regex.Match(outputLine, pattern);
+
+            if (match.Success)
+            {
+                string numberString = match.Groups[1].Value;
+                var prediction = TimeSpan.FromSeconds(double.Parse(numberString));
+                return prediction;
+            }
+            else
+            {
+                return  TimeSpan.Zero;
+            }
         }
     }
 }

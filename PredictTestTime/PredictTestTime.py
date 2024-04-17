@@ -1,67 +1,87 @@
 # %%
+import os;
 import sys
 import json
 import pandas as pd
-import pylab as py
-import matplotlib.pyplot as plt
-import sklearn.model_selection as mods
-import sklearn.linear_model as sklin
-import sklearn.tree as st
-import os;
 from xgboost import XGBRegressor
 
-# %%
-# read input data
-#parameters = json.loads(sys.argv[1])
-sparkParameters = '{"ITuff_PartType_FromSpark":"H64ADNSVAL", \
-"ITuff_ProcessStep_FromSpark":"CLASSHOT", \
-"ITuff_ExperimentType_FromSpark":"Correlation"}'
+#############################
+#Functions
 
-#json_strings = parameters.split(', ')
-parametersAsDictionary = json.loads(sparkParameters)
+# set Dummy fields
+def setDummyField(df, prefixColumnText, suffixCoulmnText):
+    any_column_that_suits = any(col.startswith(prefixColumnText) and
+                                col.endswith(suffixCoulmnText) for col in df.columns)
+    if(any_column_that_suits == False):
+         raise ValueError(f"Suffix {suffixCoulmnText} on columns {prefixColumnText} is not found")
 
-#print(parametersAsDictionary)
+    # reset all relevant columns
+    for column in df.columns:
+        if column.startswith(prefixColumnText):
+            df[column] = False
 
-# %%
-# read train data
+    # set relevant column
+    for column in df.columns:
+        if column.endswith(suffixCoulmnText):
+            df[column] = True
+            break
+###############################
+            
+#%%
 file_name = 'TestPredictionResults_23-05-07_08-51-44'
-file_ext = '.csv'
-file_path = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
-df=pd.read_csv(os.path.join(file_path, file_name + file_ext))
+file_columns_ext = '.columns'
+trainingDataPath = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
 
 # %%
-# remove unneeded columns
-df = df.drop(['TestProgram_Name_NA','ITuff_Temperature_NA','ITuff_SubmitterFullName_NA','ituff_EndDate_NA','ITuff_PerUnit_IsPassed_Target_NA'], axis=1)
-df = df.drop(['Family'], axis=1)                               # 'Family' doesn’t change result
-df = df.drop(['ITuff_BomGroup_FromSpark'], axis=1)
+# read trained model parameters
+model = XGBRegressor()
+model.load_model(r"C:/Users/ittayeya/AppData/Local/TTP/TrainingData/TestPredictionResults_23-05-07_08-51-44.model.json")
 
 # %%
-# combine train and input records
-df = df.append(pd.Series(np.nan for _ in range(len(df.columns))), ignore_index=True)
-lastLine = df.loc[df.index[-1]]
+# Read column names from file
+columnsFileName = os.path.join(trainingDataPath, file_name + '.columns')
+with open(columnsFileName, 'r') as file:
+    column_names = [line.strip() for line in file]
 
-lastLine['ITuff_PartType_FromSpark'] = parametersAsDictionary['ITuff_PartType_FromSpark']
-lastLine['ITuff_ProcessStep_FromSpark'] = parametersAsDictionary['ITuff_ProcessStep_FromSpark']
-lastLine['ITuff_ExperimentType_FromSpark'] = parametersAsDictionary['ITuff_ExperimentType_FromSpark']
-lastLine
+#%%
+# Create an empty DataFrame with the column names
+df = pd.DataFrame(columns=column_names)
+df = df._append(pd.Series(False, index=df.columns), ignore_index=True)
+
+#%%
+# received from args
+if(len(sys.argv) != 1):
+    raise ValueError("Must have 1 argument of dictionary of the variables")
+
+parameters = sys.argv[1]
+parametersAsDictionary = json.loads(parameters)
+
+IsConcurrent = parametersAsDictionary['IsConcurrent']
+Patterns_Count = parametersAsDictionary['Patterns_Count']
+Tests_Count = parametersAsDictionary['Tests_Count']
+Mtt_Count = parametersAsDictionary['Mtt_Count']
+ConcurrentFlows_Count = parametersAsDictionary['ConcurrentFlows_Count']
+Shmoo_tests_count = parametersAsDictionary['Shmoo_tests_count']
+PartType = parametersAsDictionary['PartType']
+ProcessStep = parametersAsDictionary['ProcessStep']
+ExperimentType = parametersAsDictionary['ExperimentType']
+
+#%% 
+# fill values
+df['IsConcurrent'] = bool(IsConcurrent)
+df['Patterns_Count'] = int(Patterns_Count)
+df['Tests_Count'] = int(Tests_Count)
+df['Mtt_Count'] = int(Mtt_Count)
+df['ConcurrentFlows_Count'] = int(ConcurrentFlows_Count)
+df['Shmoo_tests_count'] =int(Shmoo_tests_count)
+
+#%%
+setDummyField(df, 'ITuff_PartType', PartType)
+
+setDummyField(df, 'ITuff_ProcessStep', ProcessStep)
+
+setDummyField(df, 'ITuff_ExperimentType', ExperimentType)
 
 # %%
-# create dummies
-df_w_dummies = pd.get_dummies(df, columns =['ITuff_PartType_FromSpark'])
-df_w_dummies = pd.get_dummies(df_w_dummies, columns =['ITuff_ProcessStep_FromSpark'])
-df_w_dummies = pd.get_dummies(df_w_dummies, columns =['ITuff_ExperimentType_FromSpark'])
-
-df_w_dummies = df_w_dummies.drop(['ITuff_Lot_NA'], axis=1)
-
-# remove train data
-
-# %%
-# load model parameters
-model2 = XGBRegressor()
-model2.load_model("C:\Users\ittayeya\AppData\Local\TTP\TrainingData\ITuffProcessedData_24-03-02_05-13-06.model")
-
-# run model on input data
-prediction = model2.predict(inputData)
-
-# export output as json to c# process as std out
-print(prediction)
+predictedTestTime = model.predict(df)
+print(f"output: {predictedTestTime[0]}")
