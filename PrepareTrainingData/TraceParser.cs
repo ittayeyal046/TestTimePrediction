@@ -88,50 +88,6 @@ public class TraceParser
         return ituffDefinitionList;
     }
 
-    /*
-    public async Task<IEnumerable<TestInstance>> GetRunTestInstances(ItuffDefinition ituffDefinition)
-    {
-        logger.Information("Start GetRunTestInstances");
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-
-        var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
-        var fileService = new PassThroughFileService(driveMapping);
-
-        // that factory will prepare the session object containing all relevant data
-        var sessionFactory = new SessionFactory(fileService);
-
-        // start creating the session. That operation is async - for our demo we'll keep it simple and just wait for it to finish
-        using (var session = sessionFactory.CreateSession(ituffDefinition))
-        {
-            logger.Information($"\nLoading data for: {ituffDefinition.Name} ...");
-
-            // wait for the data to load
-            await session.SessionStartup;
-
-            //var visualId = session.Units.First().VisualId;
-
-            // get instances that has runtime data, meaning at least one unit passed through it
-            var runTestInstances =
-                session.TestProgram.MainFlow.DeepSelect()
-                    .OfType<TestInstance>()
-                    .Where(
-                        i =>
-                            i.GetRuntimeModel<TpRuntimeModel>() != null);
-
-            sw.Stop();
-            logger.Information($"End GetRunTestInstances in {sw.Elapsed}");
-
-            return runTestInstances;
-        }
-    }
-    */
-
-    public IEnumerable<UnitTestResult> GetUnitTestResults(TestInstance testInstance)
-    {
-        return testInstance.GetTestResults();
-    }
-
     public IEnumerable<(string Key, (bool isPassed, TimeSpan TotalUnitRunTime))> CalcTestTimeForUnits(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
     {
         Stopwatch sw = new Stopwatch();

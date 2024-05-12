@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
-using Parquet.Data.Rows;
 
 namespace TestTimePrediction
 {
