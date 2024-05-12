@@ -8,7 +8,7 @@ using Trace.Api.Services.TestResults.TestTime;
 
 public class DataCreator : IDataCreator
 {
-    public IEnumerable<Dictionary<string, string>> FillRecords(IDriveMapping driveMapping, TraceParser traceParser,
+    public async Task<IList<Dictionary<string, string>>> FillRecordsAsync(IDriveMapping driveMapping, TraceParser traceParser,
         ClassItuffDefinition ituffDefinition, TestProgram testProgram)
     {
         var list = new List<Dictionary<string, string>>();
@@ -16,9 +16,9 @@ public class DataCreator : IDataCreator
 
         try
         {
-            testTimePerUnit = traceParser.CalcTestTimeForUnits(driveMapping, ituffDefinition);
+            testTimePerUnit = await traceParser.CalcTestTimeForUnitsAsync(driveMapping, ituffDefinition);
         }
-        catch (Exception e)
+        catch
         {
             return list;
         }

@@ -50,8 +50,8 @@ df = df._append(pd.Series(False, index=df.columns), ignore_index=True)
 
 #%%
 # received from args
-if(len(sys.argv) != 1):
-    raise ValueError("Must have 1 argument of dictionary of the variables")
+if(len(sys.argv) != 2):
+    raise ValueError("Must have 2 argument of dictionary of the variables and has " + str(len(sys.argv)) + " of: " + "[1]:" + sys.argv[1])
 
 parameters = sys.argv[1]
 parametersAsDictionary = json.loads(parameters)

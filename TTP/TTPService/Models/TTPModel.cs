@@ -7,6 +7,7 @@ using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using PredictTestTimeWrapper;
 using Trace.Api.Common.TP;
+using Trace.Common;
 using TTPService.Enums;
 using TTPService.FunctionalExtensions;
 using TTPService.Helpers;
@@ -27,7 +28,7 @@ namespace TTPService.Models
             _traceParserHelper = traceParserHelper;
         }
 
-        public async Task<Result<int, ErrorResult>> Predict(
+        public async Task<Result<double, ErrorResult>> Predict(
             string stplPath,
             string tplPath,
             string partType,
@@ -40,21 +41,21 @@ namespace TTPService.Models
             {
                 ["IsConcurrent"] = testProgram?.IsConcurrent.ToString(),
                 ["Patterns_Count"] = testProgram?.Plists?.Where(p => p.Patterns != null)
-                    .SelectMany(p => p.Patterns)?.Distinct()?.Count().ToString(),
+                    .SelectMany(p => p.Patterns)?.Distinct()?.Count().ToString() ?? "0",
                 ["Tests_Count"] =
                     (_traceParserHelper.GetAllElement<TestInstance>(testProgram)?.Count()).ToString(),
                 ["Mtt_Count"] =
                     _traceParserHelper.GetAllElement<MttTestInstance>(testProgram)?.Count().ToString(),    // add mtt another 2 times (total of 3 times))
                 ["ConcurrentFlows_Count"] = _traceParserHelper.GetAllElement<ConcurrentFlow>(testProgram)?.Count().ToString(),
                 ["Shmoo_tests_count"] = _traceParserHelper.GetAllElement<TestInstance>(testProgram)?.Count(ti => ti.Name.Contains("shmoo", StringComparison.OrdinalIgnoreCase)).ToString(),
-                ["ITuff_PartType_FromSpark"] = partType,
-                ["ITuff_ProcessStep_FromSpark"] = processStep,
-                ["ITuff_ExperimentType_FromSpark"] = experimentType.ToString(),  // correlation / engineering / walkTheLot
+                ["PartType"] = partType,
+                ["ProcessStep"] = processStep,
+                ["ExperimentType"] = experimentType.ToString() // correlation / engineering / walkTheLot
             };
 
             // TODO: read pythonExePath from environment variable?;
             // TODO: inject TTPWrapper to constructor & add interface;
-            var pythonExePath = "TODO: read from environment variable?";
+            var pythonExePath = GetPythonPath();
             var ttpWrapper = new TTPWrapper(pythonExePath);
             var prediction = ttpWrapper.Predict(parametersDictionary);
 
@@ -64,7 +65,13 @@ namespace TTPService.Models
             // 3. Fill the record with the data
             // 4. Call the .py and return the result
 
-            return Result.Ok<int, ErrorResult>(prediction.Seconds);
+            return Result.Ok<double, ErrorResult>(prediction.TotalSeconds);
+        }
+
+        private static string GetPythonPath()
+        {
+            //return Environment.GetEnvironmentVariable("PythonExePath");
+            return @"C:\Users\ittayeya\AppData\Local\Programs\Python\Python312\python.exe";
         }
     }
 }
