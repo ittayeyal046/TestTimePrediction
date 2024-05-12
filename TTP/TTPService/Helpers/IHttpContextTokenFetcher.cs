@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 
-namespace TTPService.Helpers
+namespace TTPService.Helpers;
+
+public interface IHttpContextTokenFetcher
 {
-    public interface IHttpContextTokenFetcher
-    {
-        Task<Result<string>> GetToken();
-    }
+    Task<Result<string>> GetToken();
 }

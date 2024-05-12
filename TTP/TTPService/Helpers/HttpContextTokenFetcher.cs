@@ -3,32 +3,31 @@ using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
-namespace TTPService.Helpers
+namespace TTPService.Helpers;
+
+public class HttpContextTokenFetcher : IHttpContextTokenFetcher
 {
-    public class HttpContextTokenFetcher : IHttpContextTokenFetcher
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public HttpContextTokenFetcher(IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public HttpContextTokenFetcher(IHttpContextAccessor httpContextAccessor)
+    public async Task<Result<string>> GetToken()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null)
         {
-            _httpContextAccessor = httpContextAccessor;
+            return Result.Fail<string>("Failed to retrieve access token from http context, http context is null");
         }
 
-        public async Task<Result<string>> GetToken()
+        var accessToken = await httpContext.GetTokenAsync("access_token");
+        if (string.IsNullOrEmpty(accessToken))
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext == null)
-            {
-                return Result.Fail<string>("Failed to retrieve access token from http context, http context is null");
-            }
-
-            var accessToken = await httpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                return Result.Fail<string>("Failed to retrieve access token from current http context");
-            }
-
-            return Result.Ok(accessToken);
+            return Result.Fail<string>("Failed to retrieve access token from current http context");
         }
+
+        return Result.Ok(accessToken);
     }
 }

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace PredictTestTimeWrapper
 {
-    internal class TTPWrapper
+    public class TTPWrapper
     {
         private readonly string pythonExePath;
 

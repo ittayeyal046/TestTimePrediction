@@ -43,9 +43,9 @@ namespace TTPService.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
         public async Task<ActionResult<int>> PredictTestTime(
-            [FromQuery, Bind, PathValidator] string tpPath = null,
+            [FromQuery, Bind, PathValidator] string stplPath = null,
+            [FromQuery, Bind, PathValidator] string tplPath = null,
             [FromQuery, Bind, PartTypeValidator] string partType = null,
-            [FromQuery, Bind] string bomGroup = null,
             [FromQuery, Bind] string processStep = null,
             [FromQuery, Bind, ExperimentTypeValidator] string experimentType = null)
         {
@@ -55,7 +55,7 @@ namespace TTPService.Controllers
             }
 
             var parsedStatus = (ExperimentType)Enum.Parse(typeof(ExperimentType), experimentType, true);
-            var prediction = await _ttpModel.Predict(tpPath, partType, bomGroup, processStep, parsedStatus);
+            var prediction = await _ttpModel.Predict(stplPath, tplPath, partType, processStep, parsedStatus);
             return prediction.ToActionResult(this);
         }
     }
