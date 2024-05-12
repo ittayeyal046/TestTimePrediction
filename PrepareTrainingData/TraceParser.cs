@@ -88,7 +88,7 @@ public class TraceParser
         return ituffDefinitionList;
     }
 
-    public IEnumerable<(string Key, (bool isPassed, TimeSpan TotalUnitRunTime))> CalcTestTimeForUnits(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
+    public async Task<IEnumerable<(string Key, (bool isPassed, TimeSpan TotalUnitRunTime))>> CalcTestTimeForUnitsAsync(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -97,39 +97,38 @@ public class TraceParser
         var fileService = new PassThroughFileService(driveMapping);
         var sessionCreator = new SessionCreator(fileService);
 
-        using (var session = sessionCreator.CreateSession(ituffDefinition))
+        using var session = sessionCreator.CreateSession(ituffDefinition);
+
+        logger.Information($"Loading data for: {ituffDefinition.Name} ...");
+
+        // wait for the data to load
+        await session.SessionStartup;
+
+        var testTimeDataCreator = new TestTimeDataCreator(null);
+
+        // run the test time calculation based on the test time ituff tokens
+        var testTimeData = testTimeDataCreator.CalculateTestTime(session, null, CancellationToken.None);
+
+        // we have test time data per selected lot
+        var lotTestTimeData = testTimeData.FirstOrDefault();
+
+        if (lotTestTimeData == null)
         {
-            logger.Information($"Loading data for: {ituffDefinition.Name} ...");
-
-            // wait for the data to load
-            session.SessionStartup.Wait();
-
-            var testTimeDataCreator = new TestTimeDataCreator(null);
-
-            // run the test time calculation based on the test time ituff tokens
-            var testTimeData = testTimeDataCreator.CalculateTestTime(session, null, CancellationToken.None);
-
-            // we have test time data per selected lot
-            var lotTestTimeData = testTimeData.FirstOrDefault();
-
-            if (lotTestTimeData == null)
-            {
-                logger.Error("Failed to create test time data in that lot");
-                return new[] { ("NA", (false, TimeSpan.Zero)) };
-            }
-
-            var unitsIdIsPassed = lotTestTimeData.UnitsExtraData
-                .GroupBy(ur => ur.UnitId)
-                .Select(g => (g.Key, g.Any(ui => ui.IsPassed))).ToDictionary(i => i.Key, i => i.Item2);
-
-            var result = lotTestTimeData.TestInstancesRawData
-                .SelectMany(ti => ti.UnitsResult)
-                .GroupBy(ur => ur.UnitId)
-                .Select(uig => (uig.Key, (unitsIdIsPassed[uig.Key], TimeSpan.FromMilliseconds(uig.Sum(ui => ui.Result)))));
-
-            sw.Stop();
-            logger.Information($"End CalcTestTimeForUnits, took {sw.Elapsed}");
-            return result;
+            logger.Error("Failed to create test time data in that lot");
+            return new[] { ("NA", (false, TimeSpan.Zero)) };
         }
+
+        var unitsIdIsPassed = lotTestTimeData.UnitsExtraData
+            .GroupBy(ur => ur.UnitId)
+            .Select(g => (g.Key, g.Any(ui => ui.IsPassed))).ToDictionary(i => i.Key, i => i.Item2);
+
+        var result = lotTestTimeData.TestInstancesRawData
+            .SelectMany(ti => ti.UnitsResult)
+            .GroupBy(ur => ur.UnitId)
+            .Select(uig => (uig.Key, (unitsIdIsPassed[uig.Key], TimeSpan.FromMilliseconds(uig.Sum(ui => ui.Result)))));
+
+        sw.Stop();
+        logger.Information($"End CalcTestTimeForUnits, took {sw.Elapsed}");
+        return result;
     }
 }

@@ -12,7 +12,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
 {
     internal class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var appDirectory = GetAppDirectory();
 
@@ -46,6 +46,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
             IDataCreator dataCreator = new DataCreator();
             List<Dictionary<string, string>> records = new List<Dictionary<string, string>>();
 
+            var csv = new Csv(dataFileName);
             foreach (var ituffDefinitionGroup in
                                           ituffListForParsing.GroupBy(i => i.StplPath + "_" + i.TplPath))
             {
@@ -58,15 +59,14 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
                 foreach (var ituffDefinition in ituffDefinitionGroup)
                 {
-                    records.AddRange(dataCreator.FillRecords(driveMapping, traceParser, ituffDefinition, testProgram));
+                    records.AddRange(await dataCreator.FillRecordsAsync(driveMapping, traceParser, ituffDefinition, testProgram));
 
                     try
                     {
                         // if (File.Exists(dataFileName))
                         //     File.Delete(dataFileName);
 
-                        var csv = new Csv();
-                        csv.Write(dataFileName, records);
+                        csv.Write(records);
                     }
                     // in case file is already open in excel
                     catch
@@ -85,7 +85,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
         private static DateTime GetLastRecordDate(string dataFileName)
         {
             string lastLine = File.ReadLines(dataFileName).LastOrDefault();
-            var dateTime = lastLine.Split(',').ElementAt(13);
+            var dateTime = lastLine.Split(',').ElementAt(12);
             return DateTime.Parse(dateTime);
         }
 
