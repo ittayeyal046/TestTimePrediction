@@ -7,6 +7,7 @@ namespace PredictTestTimeWrapper
     public class TTPWrapper
     {
         private readonly string pythonExePath;
+        private readonly string PredictTestTimePyPath = "\"c:\\Git\\TestTimePrediction\\PredictTestTime\\";
 
         public TTPWrapper(string pythonExePath)
         {
@@ -25,9 +26,10 @@ namespace PredictTestTimeWrapper
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = $"{pythonExePath}",
-                Arguments = $"\"{Path.GetFullPath(".")}\\{pythonScript}\" \"{fixParametersForPython}\"",
+                Arguments = $"{PredictTestTimePyPath}{pythonScript}\" \"{fixParametersForPython}\"",
                 WorkingDirectory = Path.GetDirectoryName(pythonExePath),
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
             };
 
             // Start the Python process
@@ -36,10 +38,11 @@ namespace PredictTestTimeWrapper
 
             // Read the output of the Python process
             var outputLine = process.StandardOutput.ReadToEnd();
+            var errorOutput = process.StandardError.ReadToEnd();
             process.WaitForExit();
 
-            if (outputLine == null)
-                throw new InvalidDataException();
+            if (outputLine == null || string.IsNullOrEmpty(outputLine))
+                throw new InvalidDataException(errorOutput);
 
             string pattern = @"output:\s*(\d+)";
             Match match = Regex.Match(outputLine, pattern);

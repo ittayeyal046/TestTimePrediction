@@ -3,20 +3,19 @@ using System.Diagnostics;
 using Serilog;
 using TestTimePrediction;
 using Trace.Api.Common;
-using Trace.Api.Common.TP;
 using Trace.Api.Configuration;
 
 namespace MyApp // Note: actual namespace depends on the project name.
 {
     internal class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var appDirectory = GetAppDirectory();
 
-            var fileName = @$"ITuffProcessedData_{DateTime.Now:yy-MM-dd_hh-mm-ss}";
+            var fileName = @$"ITuffProcessedData";
             var dataFileName = appDirectory + $"\\{fileName}.csv";
-            var logFileName = appDirectory + $"\\{fileName}.log.txt";
+            var logFileName = appDirectory + "\\Logs\\" + $"\\{fileName}_{DateTime.Now:yy-MM-dd_hh-mm-ss}.log.txt";
 
             var logger = new LoggerConfiguration()
                        .WriteTo.Console()
@@ -24,15 +23,9 @@ namespace MyApp // Note: actual namespace depends on the project name.
                        .CreateLogger();
 
             logger.Information("Main starting...");
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
-
-            if (args.Length > 1)
-            {
-                logger.Error("Number of arguments must be 0 or 1 (0 use all iTuffs, 1 define amount of iTuffs)");
-                return;
-            }
-
+            
             // object containing IDC network drives map
             var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
 
@@ -40,20 +33,21 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             var allItuffDefinitions = traceParser.GetClassITuffDefinitions().ToArray();
 
-            int numOfItuff = args.Length == 0 ? -1 : int.Parse(args[0]);
-            var ituffsForParsing =
+            var lastITuffRecordDate = GetLastRecordDate(dataFileName);
+            var ituffListForParsing =
                 allItuffDefinitions
+                    .Where(ituff => ituff.EndDate > lastITuffRecordDate)
                     .Where(ituff => ituff.ExperimentType is "Engineering" or "Correlation" or "WalkTheLot")
-                    .OrderByDescending(ituff => ituff.EndDate)
-                    .TakeLast(numOfItuff == -1 ? allItuffDefinitions.Count() : numOfItuff);
+                    .OrderBy(ituff => ituff.EndDate)
+                    .TakeLast(allItuffDefinitions.Count());
 
             IDataCreator dataCreator = new DataCreator();
-            List<Dictionary<string, string>> records = new List<Dictionary<string, string>>();
 
+            var csv = new Csv(dataFileName);
             foreach (var ituffDefinitionGroup in
-                                          ituffsForParsing.GroupBy(i => i.StplPath + "_" + i.TplPath))
+                                          ituffListForParsing.GroupBy(i => i.StplPath + "_" + i.TplPath))
             {
-                TestProgram testProgram = traceParser.GetTestProgram(driveMapping, ituffDefinitionGroup.First().StplPath, ituffDefinitionGroup.First().TplPath);
+                var testProgram = traceParser.GetTestProgram(driveMapping, ituffDefinitionGroup.First().StplPath, ituffDefinitionGroup.First().TplPath);
 
                 if (testProgram == null)
                 {
@@ -62,15 +56,11 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
                 foreach (var ituffDefinition in ituffDefinitionGroup)
                 {
-                    records.AddRange(dataCreator.FillRecords(driveMapping, traceParser, ituffDefinition, testProgram));
+                    var newRecords = await dataCreator.FillRecordsAsync(driveMapping, traceParser, ituffDefinition, testProgram);
 
                     try
                     {
-                        if (File.Exists(dataFileName))
-                            File.Delete(dataFileName);
-
-                        var csv = new Csv();
-                        csv.Write(dataFileName, records);
+                        csv.Write(newRecords);
                     }
                     // in case file is already open in excel
                     catch
@@ -78,12 +68,22 @@ namespace MyApp // Note: actual namespace depends on the project name.
                         continue;
                     }
 
-                    logger.Information($"Writing {records.Count} records to file {dataFileName}");
+                    logger.Information($"Writing {newRecords.Count()} records to file {dataFileName}");
                 }
             }
 
             sw.Stop();
             logger.Information($"\nProgram run took {sw.Elapsed}");
+        }
+
+        private static DateTime GetLastRecordDate(string dataFileName)
+        {
+            if(!File.Exists(dataFileName))
+                return DateTime.MinValue;
+
+            string lastLine = File.ReadLines(dataFileName).Last(l => !string.IsNullOrEmpty(l));
+            var dateTime = lastLine.Split(',').ElementAt(12);
+            return DateTime.Parse(dateTime);
         }
 
         private static string GetAppDirectory()

@@ -1,32 +1,40 @@
 ﻿using System.Globalization;
+using System.ServiceModel.Channels;
 using CsvHelper;
 using CsvHelper.Configuration;
-using Parquet.Data.Rows;
 
 namespace TestTimePrediction
 {
     public class Csv
     {
-        private bool hasHeaderBeenWritten;
+        private readonly string dataFilePath;
+        private bool needToAddHeader;
 
-        public void Write(string fileName, IEnumerable<Dictionary<string,string>> records)
+        public Csv(string dataFilePath)
+        {
+            this.dataFilePath = dataFilePath;
+            needToAddHeader = !File.Exists(dataFilePath);
+        }
+
+        public void Write(IEnumerable<Dictionary<string,string>> records)
         {
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
             {
                 HasHeaderRecord = true,
-                Delimiter = ",",
+                Delimiter = ","
             };
-            using var writer = new StreamWriter(fileName);
+
+            using var writer = new StreamWriter(dataFilePath, true);
             using var csv = new CsvWriter(writer, config);
 
-            if (!hasHeaderBeenWritten)
+            if (needToAddHeader)
             {
                 foreach (var pair in records.First())
                 {
                     csv.WriteField(pair.Key);
                 }
 
-                hasHeaderBeenWritten = true;
+                needToAddHeader = false;
                 
                 csv.NextRecord();
             }
@@ -42,5 +50,4 @@ namespace TestTimePrediction
             }
         }
     }
-
 }

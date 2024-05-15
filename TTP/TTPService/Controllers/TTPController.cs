@@ -42,7 +42,7 @@ namespace TTPService.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<ActionResult<int>> PredictTestTime(
+        public async Task<ActionResult<double>> PredictTestTime(
             [FromQuery, Bind, PathValidator] string stplPath = null,
             [FromQuery, Bind, PathValidator] string tplPath = null,
             [FromQuery, Bind, PartTypeValidator] string partType = null,
