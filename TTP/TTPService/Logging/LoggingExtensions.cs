@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,11 +19,12 @@ namespace TTPService.Logging
                 .AddApplicationInsightsTelemetry(options => configuration.GetSection("ApplicationInsights").Bind(options))
                 .AddApplicationInsights(configuration);
             var serviceProvider = services.BuildServiceProvider();
-            var client = (TelemetryClient)serviceProvider.GetService(typeof(TelemetryClient));
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
-                .WriteTo.ApplicationInsights(client, TelemetryConverter.Traces)
+                .WriteTo.ApplicationInsights(
+                    serviceProvider.GetRequiredService<TelemetryConfiguration>(),
+                    TelemetryConverter.Traces)
                 .CreateLogger();
 
             return services;
