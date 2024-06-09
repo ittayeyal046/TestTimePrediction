@@ -5,7 +5,7 @@ using TestTimePrediction;
 using Trace.Api.Common;
 using Trace.Api.Configuration;
 
-namespace MyApp // Note: actual namespace depends on the project name.
+namespace PrepareTrainingData
 {
     internal class Program
     {
@@ -15,7 +15,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             var fileName = @$"ITuffProcessedData";
             var dataFileName = appDirectory + $"\\{fileName}.csv";
-            var logFileName = appDirectory + "\\Logs\\" + $"\\{fileName}_{DateTime.Now:yy-MM-dd_hh-mm-ss}.log.txt";
+            var logFileName = appDirectory + "\\Logs\\" + $"{fileName}.{DateTime.Now:yy-MM-dd_hh-mm-ss}.log.txt";
 
             var logger = new LoggerConfiguration()
                        .WriteTo.Console()

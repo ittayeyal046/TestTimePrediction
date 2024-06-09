@@ -10,8 +10,7 @@ namespace PythonProcessExample
         static void Main(string[] args)
         {
             // Path to the Python executable
-            var pythonExe = @"C:\Users\ittayeya\AppData\Local\Programs\Python\Python312\python.exe";
-            //var pythonExe = @"C:\ProgramData\Anaconda3\python.exe";
+            var pythonExe = args[0];
 
             var parameters = new Dictionary<string, string>()
             {
@@ -21,11 +20,11 @@ namespace PythonProcessExample
                 { "Mtt_Count", "10" }, 
                 { "ConcurrentFlows_Count", "50" }, 
                 { "Shmoo_tests_count", "10" }, 
-                { "PartType", "P54ADTAVCB" }, 
+                { "PartType", "224LNE4VB" }, 
                 { "ProcessStep", "CLASSHOT" }, 
                 { "ExperimentType", "Engineering" }
             };
-            var ttpWrapper = new TTPWrapper(pythonExe);
+            var ttpWrapper = new PredictTestTimeWrapper.PredictTestTimeWrapper(pythonExe);
             
             var result = ttpWrapper.Predict(parameters);
             Console.WriteLine(result);

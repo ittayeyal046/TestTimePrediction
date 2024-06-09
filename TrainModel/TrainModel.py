@@ -11,7 +11,7 @@ import os;
 matplotlib.use('agg')
 
 # %%
-file_name = 'TestPredictionResults_23-05-07_08-51-44'
+file_name = 'ITuffProcessedData'
 file_csv_ext = '.csv'
 trainingDataPath = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
 df=pd.read_csv(os.path.join(trainingDataPath, file_name + file_csv_ext))

@@ -4,12 +4,11 @@ using Newtonsoft.Json;
 
 namespace PredictTestTimeWrapper
 {
-    public class TTPWrapper
+    public class PredictTestTimeWrapper
     {
         private readonly string pythonExePath;
-        private readonly string PredictTestTimePyPath = "\"c:\\Git\\TestTimePrediction\\PredictTestTime\\";
 
-        public TTPWrapper(string pythonExePath)
+        public PredictTestTimeWrapper(string pythonExePath)
         {
             this.pythonExePath = pythonExePath;
         }
@@ -17,7 +16,8 @@ namespace PredictTestTimeWrapper
         public TimeSpan Predict(IDictionary<string, string> parametersDictionary)
         {
             // Path to the Python script you want to run
-            string pythonScript = @"PredictTestTime.py";
+            string predictTestTimeScriptName = @"PredictTestTime.py";
+            string appFolder = AppDomain.CurrentDomain.BaseDirectory;
 
             // Create a ProcessStartInfo object
             var parameters = string.Join(" ", JsonConvert.SerializeObject(parametersDictionary));
@@ -26,7 +26,7 @@ namespace PredictTestTimeWrapper
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = $"{pythonExePath}",
-                Arguments = $"{PredictTestTimePyPath}{pythonScript}\" \"{fixParametersForPython}\"",
+                Arguments = $"{appFolder}{predictTestTimeScriptName} \"{fixParametersForPython}\"",
                 WorkingDirectory = Path.GetDirectoryName(pythonExePath),
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
@@ -58,5 +58,23 @@ namespace PredictTestTimeWrapper
                 return  TimeSpan.Zero;
             }
         }
+
+        private static string GetAppDirectory()
+        {
+            string localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            // Create a subfolder within LocalAppData where you want to save your files
+            string subfolder = @"TTP\TrainingData";
+            string fullPath = Path.Combine(localAppDataPath, subfolder);
+
+            // Create the directory if it doesn't exist
+            if (!Directory.Exists(fullPath))
+            {
+                Directory.CreateDirectory(fullPath);
+            }
+
+            return fullPath;
+        }
+
     }
 }
