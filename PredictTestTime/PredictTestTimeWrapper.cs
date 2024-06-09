@@ -4,15 +4,27 @@ using Newtonsoft.Json;
 
 namespace PredictTestTimeWrapper
 {
+    /// <summary>
+    /// The predict test time wrapper.
+    /// </summary>
     public class PredictTestTimeWrapper
     {
         private readonly string pythonExePath;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PredictTestTimeWrapper"/> class.
+        /// </summary>
+        /// <param name="pythonExePath">The python exe path.</param>
         public PredictTestTimeWrapper(string pythonExePath)
         {
             this.pythonExePath = pythonExePath;
         }
 
+        /// <summary>
+        /// Predicts the
+        /// </summary>
+        /// <param name="parametersDictionary">The parameters dictionary.</param>
+        /// <returns>A TimeSpan.</returns>
         public TimeSpan Predict(IDictionary<string, string> parametersDictionary)
         {
             // Path to the Python script you want to run
@@ -44,6 +56,7 @@ namespace PredictTestTimeWrapper
             if (outputLine == null || string.IsNullOrEmpty(outputLine))
                 throw new InvalidDataException(errorOutput);
 
+            // look for number the seconds after output:
             string pattern = @"output:\s*(\d+)";
             Match match = Regex.Match(outputLine, pattern);
 
@@ -55,26 +68,8 @@ namespace PredictTestTimeWrapper
             }
             else
             {
-                return  TimeSpan.Zero;
+                return TimeSpan.Zero;
             }
         }
-
-        private static string GetAppDirectory()
-        {
-            string localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-            // Create a subfolder within LocalAppData where you want to save your files
-            string subfolder = @"TTP\TrainingData";
-            string fullPath = Path.Combine(localAppDataPath, subfolder);
-
-            // Create the directory if it doesn't exist
-            if (!Directory.Exists(fullPath))
-            {
-                Directory.CreateDirectory(fullPath);
-            }
-
-            return fullPath;
-        }
-
     }
 }

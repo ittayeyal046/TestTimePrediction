@@ -7,7 +7,7 @@ namespace TTPService.Models
 {
     public interface ITtpModel
     {
-        Task<Result<double, ErrorResult>> Predict(
+        Task<Result<double, ErrorResult>> PredictAsync(
             string stplPath,
             string tplPath,
             string partType,

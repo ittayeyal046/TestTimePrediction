@@ -1,7 +1,7 @@
 ﻿
 using System.Diagnostics;
 using Serilog;
-using TestTimePrediction;
+using PrepareTrainingData;
 using Trace.Api.Common;
 using Trace.Api.Configuration;
 

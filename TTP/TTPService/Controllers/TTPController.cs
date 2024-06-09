@@ -17,21 +17,21 @@ namespace TTPService.Controllers
 
     public class TTPController : ControllerBase
     {
-        private readonly ILogger<TTPController> _logger;
-        private readonly ITtpModel _ttpModel;
+        private readonly ILogger<TTPController> logger;
+        private readonly ITtpModel ttpModel;
 
         public TTPController(ILogger<TTPController> logger, ITtpModel ttpModel)
         {
-            _logger = logger;
-            _ttpModel = ttpModel;
+            this.logger = logger;
+            this.ttpModel = ttpModel;
         }
 
         /// <summary>
         /// Predict test time.
         /// </summary>
-        /// <param name="tpPath">Test program Path.</param>
+        /// <param name="stplPath">stplPath.</param>
+        /// <param name="tplPath">tplPath.</param>
         /// <param name="partType">PartType.</param>
-        /// <param name="bomGroup">BomGroup.</param>
         /// <param name="processStep">ProcessStep.</param>
         /// <param name="experimentType">ExperimentType.</param>
         /// <returns>The estimated test time prediction in milliseconds.</returns>
@@ -55,7 +55,7 @@ namespace TTPService.Controllers
             }
 
             var parsedStatus = (ExperimentType)Enum.Parse(typeof(ExperimentType), experimentType, true);
-            var prediction = await _ttpModel.Predict(stplPath, tplPath, partType, processStep, parsedStatus);
+            var prediction = await this.ttpModel.PredictAsync(stplPath, tplPath, partType, processStep, parsedStatus);
             return prediction.ToActionResult(this);
         }
     }

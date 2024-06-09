@@ -17,25 +17,27 @@ namespace TTPService.Models
 {
     public class TTPModel : ITtpModel
     {
-        private readonly ILogger _logger;
-        private readonly IMapper _mapper;
-        private readonly ITraceParserHelper _traceParserHelper;
+        private readonly ILogger logger;
+        private readonly IMapper mapper;
+        private readonly ITraceParserHelper traceParserHelper;
+        private readonly string pythonPath;
 
-        public TTPModel(IMapper mapper, ILogger<TTPModel> logger , ITraceParserHelper traceParserHelper)
+        public TTPModel(IMapper mapper, ILogger<TTPModel> logger, ITraceParserHelper traceParserHelper, string pythonPath)
         {
-            _logger = logger;
-            _mapper = mapper;
-            _traceParserHelper = traceParserHelper;
+            this.logger = logger;
+            this.mapper = mapper;
+            this.traceParserHelper = traceParserHelper;
+            this.pythonPath = pythonPath;
         }
 
-        public async Task<Result<double, ErrorResult>> Predict(
+        public async Task<Result<double, ErrorResult>> PredictAsync(
             string stplPath,
             string tplPath,
             string partType,
             string processStep,
             ExperimentType experimentType)
         {
-            var testProgram = _traceParserHelper.ParseTP(stplPath, tplPath);
+            var testProgram = this.traceParserHelper.ParseTP(stplPath, tplPath);
 
             var parametersDictionary = new Dictionary<string, string>
             {
@@ -43,11 +45,11 @@ namespace TTPService.Models
                 ["Patterns_Count"] = testProgram?.Plists?.Where(p => p.Patterns != null)
                     .SelectMany(p => p.Patterns)?.Distinct()?.Count().ToString() ?? "0",
                 ["Tests_Count"] =
-                    (_traceParserHelper.GetAllElement<TestInstance>(testProgram)?.Count()).ToString(),
+                    (this.traceParserHelper.GetAllElement<TestInstance>(testProgram)?.Count()).ToString(),
                 ["Mtt_Count"] =
-                    _traceParserHelper.GetAllElement<MttTestInstance>(testProgram)?.Count().ToString(),    // add mtt another 2 times (total of 3 times))
-                ["ConcurrentFlows_Count"] = _traceParserHelper.GetAllElement<ConcurrentFlow>(testProgram)?.Count().ToString(),
-                ["Shmoo_tests_count"] = _traceParserHelper.GetAllElement<TestInstance>(testProgram)?.Count(ti => ti.Name.Contains("shmoo", StringComparison.OrdinalIgnoreCase)).ToString(),
+                    this.traceParserHelper.GetAllElement<MttTestInstance>(testProgram)?.Count().ToString(),    // add mtt another 2 times (total of 3 times))
+                ["ConcurrentFlows_Count"] = this.traceParserHelper.GetAllElement<ConcurrentFlow>(testProgram)?.Count().ToString(),
+                ["Shmoo_tests_count"] = this.traceParserHelper.GetAllElement<TestInstance>(testProgram)?.Count(ti => ti.Name.Contains("shmoo", StringComparison.OrdinalIgnoreCase)).ToString(),
                 ["PartType"] = partType,
                 ["ProcessStep"] = processStep,
                 ["ExperimentType"] = experimentType.ToString() // correlation / engineering / walkTheLot
@@ -55,8 +57,8 @@ namespace TTPService.Models
 
             // TODO: read pythonExePath from environment variable?;
             // TODO: inject TTPWrapper to constructor & add interface;
-            var pythonExePath = GetPythonPath();
-            var ttpWrapper = new TTPWrapper(pythonExePath);
+            var pythonExePath = pythonPath;
+            var ttpWrapper = new PredictTestTimeWrapper.PredictTestTimeWrapper(pythonExePath);
             var prediction = ttpWrapper.Predict(parametersDictionary);
 
             // 1. Get all the record data from trace API - as we did when we trained our model
@@ -64,14 +66,7 @@ namespace TTPService.Models
             // 2. Build the record with ALL the columns (dummies makes all possible enum values to columns, we have only one value)
             // 3. Fill the record with the data
             // 4. Call the .py and return the result
-
             return Result.Ok<double, ErrorResult>(prediction.TotalSeconds);
-        }
-
-        private static string GetPythonPath()
-        {
-            //return Environment.GetEnvironmentVariable("PythonExePath");
-            return @"C:\Users\ittayeya\AppData\Local\Programs\Python\Python312\python.exe";
         }
     }
 }

@@ -3,7 +3,7 @@ using System.ServiceModel.Channels;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace TestTimePrediction
+namespace PrepareTrainingData
 {
     public class Csv
     {

@@ -1,5 +1,5 @@
 ﻿using TestProgramParsers.Ph;
-using TestTimePrediction;
+using PrepareTrainingData;
 using Trace.Api.Common.Ituff;
 using Trace.Api.Common.TP;
 using Trace.Api.Services.BinSwitch;
@@ -12,7 +12,7 @@ public class DataCreator : IDataCreator
         ClassItuffDefinition ituffDefinition, TestProgram testProgram)
     {
         var list = new List<Dictionary<string, string>>();
-        IEnumerable<(string Key, (bool isPassed, TimeSpan TotalUnitRunTime))> testTimePerUnit;
+        IEnumerable<(string Key, (bool IsPassed, TimeSpan TotalUnitRunTime))> testTimePerUnit;
 
         try
         {
@@ -50,7 +50,7 @@ public class DataCreator : IDataCreator
                 ["ITuff_ProcessStep_FromSpark"] = ituffDefinition.GetProcessStep(),
                 ["ITuff_ExperimentType_FromSpark"] = ituffDefinition.ExperimentType,  // correlation / engineering / walkTheLot
 
-                ["ITuff_PerUnit_IsPassed_Target_NA"] = testTime4SingleUnit.Item2.isPassed.ToString(),
+                ["ITuff_PerUnit_IsPassed_Target_NA"] = testTime4SingleUnit.Item2.IsPassed.ToString(),
                 ["ITuff_PerUnit_testTimeInMS_Target"] = testTime4SingleUnit.Item2.TotalUnitRunTime.TotalSeconds.ToString()
             };
 

@@ -28,14 +28,14 @@ def setDummyField(df, prefixColumnText, suffixCoulmnText):
 ###############################
             
 #%%
-file_name = 'TestPredictionResults_23-05-07_08-51-44'
+file_name = 'ITuffProcessedData'
 file_columns_ext = '.columns'
 trainingDataPath = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
 
 # %%
 # read trained model parameters
 model = XGBRegressor()
-model.load_model(r"C:/Users/ittayeya/AppData/Local/TTP/TrainingData/TestPredictionResults_23-05-07_08-51-44.model.json")
+model.load_model(rf"{trainingDataPath}{file_name}.model.json")
 
 # %%
 # Read column names from file

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Serilog;
-using TestTimePrediction;
+using PrepareTrainingData;
 using Trace.Api.Common;
 using Trace.Api.Common.TP;
 using Trace.Api.Configuration;

@@ -14,20 +14,34 @@ using Trace.Api.Services.TestProgramParser.Interfaces;
 using Trace.Api.Services.TestResults.ItuffIndex;
 using Trace.Api.Services.TestResults.TestTime;
 
-namespace TestTimePrediction;
+namespace PrepareTrainingData;
 
+/// <summary>
+/// The trace parser.
+/// </summary>
 public class TraceParser
 {
     private readonly ILogger logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TraceParser"/> class.
+    /// </summary>
+    /// <param name="logger">The logger.</param>
     public TraceParser(ILogger logger)
     {
         this.logger = logger;
     }
 
+    /// <summary>
+    /// Gets the test program.
+    /// </summary>
+    /// <param name="driveMapping">The drive mapping.</param>
+    /// <param name="stplPath">The stpl path.</param>
+    /// <param name="tplPath">The tpl path.</param>
+    /// <returns>A TestProgram.</returns>
     public TestProgram GetTestProgram(IDriveMapping driveMapping, string stplPath, string tplPath)
     {
-        logger.Information($"""
+        this.logger.Information($"""
                           Start parsing testProgram:
                           stpl: {stplPath}
                           tpl: {tplPath}
@@ -59,6 +73,10 @@ public class TraceParser
         return testProgram;
     }
 
+    /// <summary>
+    /// Gets the class i tuff definitions.
+    /// </summary>
+    /// <returns>A list of ClassItuffDefinitions.</returns>
     public IEnumerable<ClassItuffDefinition> GetClassITuffDefinitions()
     {
         logger.Information("Start GetClassITuffDefinitions");
@@ -74,8 +92,6 @@ public class TraceParser
         // use that object to search for jobs. We will look for CLASS jobs in IDC
         using (var ituffIndexManager = new ItuffIndexManager(fileService))
         {
-            // for the sample take the first ituff
-
             ituffDefinitionList = ituffIndexManager
                 .GetAllItuffDefinitions()
                 .Cast<ClassItuffDefinition>()
@@ -88,7 +104,13 @@ public class TraceParser
         return ituffDefinitionList;
     }
 
-    public async Task<IEnumerable<(string Key, (bool isPassed, TimeSpan TotalUnitRunTime))>> CalcTestTimeForUnitsAsync(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
+    /// <summary>
+    /// Calcs the test time for units async.
+    /// </summary>
+    /// <param name="driveMapping">The drive mapping.</param>
+    /// <param name="ituffDefinition">The ituff definition.</param>
+    /// <returns>A Task.</returns>
+    public async Task<IEnumerable<(string Key, (bool IsPassed, TimeSpan TotalUnitRunTime))>> CalcTestTimeForUnitsAsync(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
