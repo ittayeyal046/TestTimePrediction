@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Serilog;
 using Trace.Api.Common;
 using Trace.Api.Configuration;
@@ -98,7 +99,8 @@ namespace PrepareTrainingData
             }
 
             string lastLine = File.ReadLines(dataFileName).Last(l => !string.IsNullOrEmpty(l));
-            var dateTime = lastLine.Split(',').ElementAt(12);
+            Regex regex = new Regex("(\\d{1,2}/\\d{1,2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} [AP]M)");
+            var dateTime = regex.Match(lastLine).Value;
             return DateTime.Parse(dateTime);
         }
 
