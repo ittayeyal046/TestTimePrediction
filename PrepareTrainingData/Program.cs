@@ -19,58 +19,75 @@ namespace PrepareTrainingData
                        .WriteTo.Console()
                        .WriteTo.File(logFileName)
                        .CreateLogger();
-
-            logger.Information("Main starting...");
             var sw = new Stopwatch();
-            sw.Start();
-            
-            // object containing IDC network drives map
-            var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
 
-            var traceParser = new TraceParser(logger);
-
-            var allItuffDefinitions = traceParser.GetClassITuffDefinitions().ToArray();
-
-            var lastITuffRecordDate = GetLastRecordDate(dataFileName);
-            var ituffListForParsing =
-                allItuffDefinitions
-                    .Where(ituff => ituff.EndDate > lastITuffRecordDate)
-                    .Where(ituff => ituff.ExperimentType is "Engineering" or "Correlation" or "WalkTheLot")
-                    .OrderBy(ituff => ituff.EndDate)
-                    .TakeLast(allItuffDefinitions.Count());
-
-            IDataCreator dataCreator = new DataCreator();
-
-            var csv = new Csv(dataFileName);
-            foreach (var ituffDefinitionGroup in
-                                          ituffListForParsing.GroupBy(i => i.StplPath + "_" + i.TplPath))
+            try
             {
-                var testProgram = traceParser.GetTestProgram(driveMapping, ituffDefinitionGroup.First().StplPath, ituffDefinitionGroup.First().TplPath);
+                logger.Information("Main starting...");
+                sw.Start();
 
-                if (testProgram == null)
+                // object containing IDC network drives map
+                var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
+
+                var traceParser = new TraceParser(logger);
+
+                var allItuffDefinitions = traceParser.GetClassITuffDefinitions().ToArray();
+
+                var lastITuffRecordDate = GetLastRecordDate(dataFileName);
+                var ituffListForParsing =
+                    allItuffDefinitions
+                        .Where(ituff => ituff.EndDate > lastITuffRecordDate)
+                        .Where(ituff => ituff.ExperimentType is "Engineering" or "Correlation" or "WalkTheLot")
+                        .OrderBy(ituff => ituff.EndDate)
+                        .TakeLast(allItuffDefinitions.Count());
+
+                IDataCreator dataCreator = new DataCreator();
+
+                var csv = new Csv(dataFileName);
+                foreach (var ituffDefinitionGroup in
+                         ituffListForParsing.GroupBy(i => i.StplPath + "_" + i.TplPath))
                 {
-                    continue;
-                }
+                    var testProgram = traceParser.GetTestProgram(
+                        driveMapping,
+                        ituffDefinitionGroup.First().StplPath,
+                        ituffDefinitionGroup.First().TplPath);
 
-                foreach (var ituffDefinition in ituffDefinitionGroup)
-                {
-                    var newRecords = await dataCreator.FillRecordsAsync(driveMapping, traceParser, ituffDefinition, testProgram);
-
-                    try
-                    {
-                        csv.Write(newRecords);
-                    }
-                    catch // in case file is already open in excel
+                    if (testProgram == null)
                     {
                         continue;
                     }
 
-                    logger.Information($"Writing {newRecords.Count()} records to file {dataFileName}");
+                    foreach (var ituffDefinition in ituffDefinitionGroup)
+                    {
+                        var newRecords = await dataCreator.FillRecordsAsync(
+                            driveMapping,
+                            traceParser,
+                            ituffDefinition,
+                            testProgram);
+
+                        try
+                        {
+                            csv.Write(newRecords);
+                        }
+                        catch // in case file is already open in excel
+                        {
+                            continue;
+                        }
+
+                        logger.Information($"Writing {newRecords.Count()} records to file {dataFileName}");
+                    }
                 }
             }
-
-            sw.Stop();
-            logger.Information($"\nProgram run took {sw.Elapsed}");
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed with exception {e}");
+                throw;
+            }
+            finally
+            {
+                sw.Stop();
+                logger.Information($"\nProgram run took {sw.Elapsed}");
+            }
         }
 
         private static DateTime GetLastRecordDate(string dataFileName)

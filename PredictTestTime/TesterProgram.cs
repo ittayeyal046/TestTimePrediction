@@ -3,13 +3,13 @@
 /// <summary>
 /// The program.
 /// </summary>
-public class Program
+public class TesterProgram
 {
     /// <summary>
     /// Main
     /// </summary>
     /// <param name="args">The args.</param>
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         // Path to the Python executable
         var pythonExe = args[0];
@@ -26,9 +26,9 @@ public class Program
                 { "ProcessStep", "CLASSHOT" },
                 { "ExperimentType", "Engineering" }
             };
-        var ttpWrapper = new global::PredictTestTimeWrapper.PredictTestTimeWrapper(pythonExe);
+        IPredictTestTimeWrapper ttpWrapper = new PredictTestTimeWrapper(pythonExe);
 
-        var result = ttpWrapper.Predict(parameters);
+        var result = await ttpWrapper.Predict(parameters);
         Console.WriteLine(result);
     }
 }

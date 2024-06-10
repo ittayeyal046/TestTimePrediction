@@ -7,7 +7,7 @@ namespace PredictTestTimeWrapper
     /// <summary>
     /// The predict test time wrapper.
     /// </summary>
-    public class PredictTestTimeWrapper
+    public class PredictTestTimeWrapper : IPredictTestTimeWrapper
     {
         private readonly string pythonExePath;
 
@@ -23,19 +23,19 @@ namespace PredictTestTimeWrapper
         /// <summary>
         /// Predicts the
         /// </summary>
-        /// <param name="parametersDictionary">The parameters dictionary.</param>
+        /// <param name="parametersDictionary">The parameters' dictionary.</param>
         /// <returns>A TimeSpan.</returns>
-        public TimeSpan Predict(IDictionary<string, string> parametersDictionary)
+        public async Task<TimeSpan> Predict(IDictionary<string, string> parametersDictionary)
         {
             // Path to the Python script you want to run
-            string predictTestTimeScriptName = @"PredictTestTime.py";
-            string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+            var predictTestTimeScriptName = @"PredictTestTime.py";
+            var appFolder = AppDomain.CurrentDomain.BaseDirectory;
 
             // Create a ProcessStartInfo object
             var parameters = string.Join(" ", JsonConvert.SerializeObject(parametersDictionary));
             var fixParametersForPython = parameters.Replace("\"", "\"\"");
 
-            ProcessStartInfo psi = new ProcessStartInfo
+            var psi = new ProcessStartInfo
             {
                 FileName = $"{pythonExePath}",
                 Arguments = $"{appFolder}{predictTestTimeScriptName} \"{fixParametersForPython}\"",
@@ -45,20 +45,23 @@ namespace PredictTestTimeWrapper
             };
 
             // Start the Python process
-            using var process = new Process { StartInfo = psi };
+            using var process = new Process();
+            process.StartInfo = psi;
             process.Start();
 
             // Read the output of the Python process
-            var outputLine = process.StandardOutput.ReadToEnd();
-            var errorOutput = process.StandardError.ReadToEnd();
-            process.WaitForExit();
+            var outputLine = await process.StandardOutput.ReadToEndAsync();
+            var errorOutput = await process.StandardError.ReadToEndAsync();
+            await process.WaitForExitAsync();
 
             if (outputLine == null || string.IsNullOrEmpty(outputLine))
+            {
                 throw new InvalidDataException(errorOutput);
+            }
 
             // look for number the seconds after output:
-            string pattern = @"output:\s*(\d+)";
-            Match match = Regex.Match(outputLine, pattern);
+            const string pattern = @"output:\s*(\d+)";
+            var match = Regex.Match(outputLine, pattern);
 
             if (match.Success)
             {
@@ -68,7 +71,7 @@ namespace PredictTestTimeWrapper
             }
             else
             {
-                return TimeSpan.Zero;
+                throw new InvalidDataException("Failed to get test time prediction");
             }
         }
     }

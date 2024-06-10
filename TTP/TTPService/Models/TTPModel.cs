@@ -30,7 +30,7 @@ namespace TTPService.Models
             this.pythonPath = pythonPath;
         }
 
-        public Task<Result<double, ErrorResult>> PredictAsync(
+        public async Task<Result<double, ErrorResult>> PredictAsync(
             string stplPath,
             string tplPath,
             string partType,
@@ -58,15 +58,15 @@ namespace TTPService.Models
             // TODO: read pythonExePath from environment variable?;
             // TODO: inject TTPWrapper to constructor & add interface;
             var pythonExePath = pythonPath;
-            var ttpWrapper = new PredictTestTimeWrapper.PredictTestTimeWrapper(pythonExePath);
-            var prediction = ttpWrapper.Predict(parametersDictionary);
+            IPredictTestTimeWrapper ttpWrapper = new PredictTestTimeWrapper.PredictTestTimeWrapper(pythonExePath);
+            var prediction = await ttpWrapper.Predict(parametersDictionary);
 
             // 1. Get all the record data from trace API - as we did when we trained our model
             //  1.1 Do we fill the data from the trace API or from our .csv? if from .csv we need to add column of TP ?
             // 2. Build the record with ALL the columns (dummies makes all possible enum values to columns, we have only one value)
             // 3. Fill the record with the data
             // 4. Call the .py and return the result
-            return Task.FromResult(Result.Ok<double, ErrorResult>(prediction.TotalSeconds));
+            return Result.Ok<double, ErrorResult>(prediction.TotalSeconds);
         }
     }
 }
