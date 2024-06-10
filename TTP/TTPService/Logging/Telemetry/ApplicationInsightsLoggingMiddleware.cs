@@ -53,18 +53,18 @@ namespace TTPService.Logging.Telemetry
 
             if (request.Body.CanRead)
             {
-                var requestBodyString = await ReadBodyStream(request.Body).ConfigureAwait(false);
+                var requestBodyString = await ReadBodyStreamAsync(request.Body).ConfigureAwait(false);
                 AddTelemetry(requestTelemetry, RequestBody, requestBodyString);
             }
 
             if (replacementResponseBody.CanRead)
             {
-                var responseBodyString = await ReadBodyStream(replacementResponseBody).ConfigureAwait(false);
+                var responseBodyString = await ReadBodyStreamAsync(replacementResponseBody).ConfigureAwait(false);
                 AddTelemetry(requestTelemetry, ResponseBody, responseBodyString);
             }
         }
 
-        private async Task<string> ReadBodyStream(Stream body)
+        private async Task<string> ReadBodyStreamAsync(Stream body)
         {
             if (body.Length == 0)
             {

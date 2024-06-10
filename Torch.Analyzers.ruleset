@@ -122,7 +122,7 @@
     <Rule Id="SA1518" Action="Warning" />
     <Rule Id="SA1519" Action="Warning" />
     <Rule Id="SA1520" Action="Warning" />
-    <Rule Id="SA1600" Action="Warning" />
+    <Rule Id="SA1600" Action="None" />
     <Rule Id="SA1601" Action="Warning" />
     <Rule Id="SA1602" Action="Warning" />
     <Rule Id="SA1604" Action="Warning" />

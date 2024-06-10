@@ -1,76 +1,81 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <CodeAnalysisRuleSet>..\SolutionResources\StyleCop.Analyzers.ruleset</CodeAnalysisRuleSet>    
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<CodeAnalysisRuleSet>..\SolutionResources\StyleCop.Analyzers.ruleset</CodeAnalysisRuleSet>
+		<LangVersion>latest</LangVersion>
+		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\..\Torch.Analyzers.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <!--Gateway NuGet version depends on this version-->
-    <Version>0.1</Version>
-  </PropertyGroup>
-  
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <Compile Remove="wwwroot\**" />
-    <Content Remove="wwwroot\**" />
-    <EmbeddedResource Remove="wwwroot\**" />
-    <None Remove="wwwroot\**" />
-  </ItemGroup>
+	<PropertyGroup>
+		<!--Gateway NuGet version depends on this version-->
+		<Version>0.1</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="AutoMapper" Version="8.0.0" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="CSharpFunctionalExtensions" Version="1.15.2" />
-    <PackageReference Include="FluentValidation" Version="11.5.2" />
-    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" ExcludeAssets="All" />
-    <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
-    <PackageReference Include="Polly" Version="7.2.0" />
-    <PackageReference Include="RestSharp" Version="107.3.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
-    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-	  <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
-	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.0" />
-	  <PackageReference Include="TraceApi" Version="10.3.3" />
-  </ItemGroup>
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\PredictTestTime\PredictTestTimeWrapper.csproj" />
-    <ProjectReference Include="..\..\PrepareTrainingData\PrepareTrainingData.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="wwwroot\**" />
+		<Content Remove="wwwroot\**" />
+		<EmbeddedResource Remove="wwwroot\**" />
+		<None Remove="wwwroot\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="PublishYamls\publishProduction.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="PublishYamls\publishE2E.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="PublishYamls\publishStaging.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="PublishYamls\publishDevelopment.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="PublishYamls\publishIntegration.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="..\..\stylecop.json" Link="stylecop.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="8.0.0" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.0.0" />
+		<PackageReference Include="CSharpFunctionalExtensions" Version="1.15.2" />
+		<PackageReference Include="FluentValidation" Version="11.5.2" />
+		<PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" ExcludeAssets="All" />
+		<PackageReference Include="MongoDB.Driver" Version="2.19.0" />
+		<PackageReference Include="Polly" Version="7.2.0" />
+		<PackageReference Include="RestSharp" Version="107.3.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+		<PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.0" />
+		<PackageReference Include="TraceApi" Version="10.3.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\PredictTestTime\PredictTestTimeWrapper.csproj" />
+		<ProjectReference Include="..\..\PrepareTrainingData\PrepareTrainingData.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="PublishYamls\publishProduction.yaml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="PublishYamls\publishE2E.yaml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="PublishYamls\publishStaging.yaml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="PublishYamls\publishDevelopment.yaml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="PublishYamls\publishIntegration.yaml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

@@ -5,7 +5,5 @@ using Trace.Api.Services.Common;
 
 public interface IDataCreator
 {
-    Task<IList<Dictionary<string, string>>> FillRecordsAsync(IDriveMapping driveMapping, TraceParser traceParser,
-        ClassItuffDefinition ituffDefinition,
-        TestProgram testProgram);
+    Task<IList<Dictionary<string, string>>> FillRecordsAsync(IDriveMapping driveMapping, TraceParser traceParser, ClassItuffDefinition ituffDefinition, TestProgram testProgram);
 }

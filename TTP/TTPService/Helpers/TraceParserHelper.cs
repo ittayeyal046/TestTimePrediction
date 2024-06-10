@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Serilog;
 using PrepareTrainingData;
+using Serilog;
 using Trace.Api.Common;
 using Trace.Api.Common.TP;
 using Trace.Api.Configuration;

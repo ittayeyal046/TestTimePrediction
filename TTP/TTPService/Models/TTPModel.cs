@@ -30,7 +30,7 @@ namespace TTPService.Models
             this.pythonPath = pythonPath;
         }
 
-        public async Task<Result<double, ErrorResult>> PredictAsync(
+        public Task<Result<double, ErrorResult>> PredictAsync(
             string stplPath,
             string tplPath,
             string partType,
@@ -66,7 +66,7 @@ namespace TTPService.Models
             // 2. Build the record with ALL the columns (dummies makes all possible enum values to columns, we have only one value)
             // 3. Fill the record with the data
             // 4. Call the .py and return the result
-            return Result.Ok<double, ErrorResult>(prediction.TotalSeconds);
+            return Task.FromResult(Result.Ok<double, ErrorResult>(prediction.TotalSeconds));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace PrepareTrainingData
             needToAddHeader = !File.Exists(dataFilePath);
         }
 
-        public void Write(IEnumerable<Dictionary<string,string>> records)
+        public void Write(IEnumerable<Dictionary<string, string>> records)
         {
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
             {

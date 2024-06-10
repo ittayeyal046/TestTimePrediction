@@ -99,18 +99,18 @@ public class TraceParser
         }
 
         sw.Stop();
-        logger.Information($"End RunTestInstances parsing testInstances in {sw.Elapsed}");
+        this.logger.Information($"End RunTestInstances parsing testInstances in {sw.Elapsed}");
 
         return ituffDefinitionList;
     }
 
     /// <summary>
-    /// Calcs the test time for units async.
+    /// Calculates the test time for units async.
     /// </summary>
     /// <param name="driveMapping">The drive mapping.</param>
     /// <param name="ituffDefinition">The ituff definition.</param>
     /// <returns>A Task.</returns>
-    public async Task<IEnumerable<(string Key, (bool IsPassed, TimeSpan TotalUnitRunTime))>> CalcTestTimeForUnitsAsync(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
+    public async Task<IEnumerable<(string Key, (bool IsPassed, TimeSpan TotalUnitRunTime) Pair)>> CalcTestTimeForUnitsAsync(IDriveMapping driveMapping, ClassItuffDefinition ituffDefinition)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();

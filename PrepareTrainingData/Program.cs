@@ -1,7 +1,5 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Serilog;
-using PrepareTrainingData;
 using Trace.Api.Common;
 using Trace.Api.Configuration;
 
@@ -62,8 +60,7 @@ namespace PrepareTrainingData
                     {
                         csv.Write(newRecords);
                     }
-                    // in case file is already open in excel
-                    catch
+                    catch // in case file is already open in excel
                     {
                         continue;
                     }
@@ -78,8 +75,10 @@ namespace PrepareTrainingData
 
         private static DateTime GetLastRecordDate(string dataFileName)
         {
-            if(!File.Exists(dataFileName))
+            if (!File.Exists(dataFileName))
+            {
                 return DateTime.MinValue;
+            }
 
             string lastLine = File.ReadLines(dataFileName).Last(l => !string.IsNullOrEmpty(l));
             var dateTime = lastLine.Split(',').ElementAt(12);

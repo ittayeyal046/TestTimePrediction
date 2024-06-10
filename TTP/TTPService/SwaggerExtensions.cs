@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using TTPService.Authorization;
 using TTPService.Configuration;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace TTPService
 {
