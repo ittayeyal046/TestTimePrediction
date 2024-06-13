@@ -5,5 +5,5 @@ namespace TTPService.Helpers;
 
 public interface IHttpContextTokenFetcher
 {
-    Task<Result<string>> GetToken();
+    Task<Result<string>> GetTokenAsync();
 }

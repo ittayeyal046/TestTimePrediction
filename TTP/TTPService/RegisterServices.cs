@@ -10,7 +10,7 @@ namespace TTPService
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<ITtpModel, TTPModel>();
+            services.AddTransient<ITTPModel, TTPModel>();
             services.AddTransient<ITraceParserHelper, TraceParserHelper>();
             services.AddTransient<IHttpContextTokenFetcher, HttpContextTokenFetcher>();
 

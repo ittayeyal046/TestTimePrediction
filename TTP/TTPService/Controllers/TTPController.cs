@@ -17,21 +17,21 @@ namespace TTPService.Controllers
 
     public class TTPController : ControllerBase
     {
-        private readonly ILogger<TTPController> _logger;
-        private readonly ITtpModel _ttpModel;
+        private readonly ILogger<TTPController> logger;
+        private readonly ITTPModel ittpModel;
 
-        public TTPController(ILogger<TTPController> logger, ITtpModel ttpModel)
+        public TTPController(ILogger<TTPController> logger, ITTPModel ittpModel)
         {
-            _logger = logger;
-            _ttpModel = ttpModel;
+            this.logger = logger;
+            this.ittpModel = ittpModel;
         }
 
         /// <summary>
         /// Predict test time.
         /// </summary>
-        /// <param name="tpPath">Test program Path.</param>
+        /// <param name="stplPath">stplPath.</param>
+        /// <param name="tplPath">tplPath.</param>
         /// <param name="partType">PartType.</param>
-        /// <param name="bomGroup">BomGroup.</param>
         /// <param name="processStep">ProcessStep.</param>
         /// <param name="experimentType">ExperimentType.</param>
         /// <returns>The estimated test time prediction in milliseconds.</returns>
@@ -42,7 +42,7 @@ namespace TTPService.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<ActionResult<double>> PredictTestTime(
+        public async Task<ActionResult<double>> PredictTestTimeAsync(
             [FromQuery, Bind, PathValidator] string stplPath = null,
             [FromQuery, Bind, PathValidator] string tplPath = null,
             [FromQuery, Bind, PartTypeValidator] string partType = null,
@@ -55,7 +55,7 @@ namespace TTPService.Controllers
             }
 
             var parsedStatus = (ExperimentType)Enum.Parse(typeof(ExperimentType), experimentType, true);
-            var prediction = await _ttpModel.Predict(stplPath, tplPath, partType, processStep, parsedStatus);
+            var prediction = await this.ittpModel.PredictAsync(stplPath, tplPath, partType, processStep, parsedStatus);
             return prediction.ToActionResult(this);
         }
     }

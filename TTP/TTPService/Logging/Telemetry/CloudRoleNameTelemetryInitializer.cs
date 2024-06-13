@@ -5,16 +5,16 @@
 
     public class CloudRoleNameTelemetryInitializer : ITelemetryInitializer
     {
-        private readonly string _cloudRoleName;
+        private readonly string cloudRoleName;
 
         public CloudRoleNameTelemetryInitializer(string cloudRoleName)
         {
-            _cloudRoleName = cloudRoleName;
+            this.cloudRoleName = cloudRoleName;
         }
 
         public void Initialize(ITelemetry telemetry)
         {
-            telemetry.Context.Cloud.RoleName = _cloudRoleName;
+            telemetry.Context.Cloud.RoleName = this.cloudRoleName;
         }
     }
 }

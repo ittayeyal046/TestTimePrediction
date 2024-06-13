@@ -3,7 +3,7 @@ using System.ServiceModel.Channels;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace TestTimePrediction
+namespace PrepareTrainingData
 {
     public class Csv
     {
@@ -16,7 +16,7 @@ namespace TestTimePrediction
             needToAddHeader = !File.Exists(dataFilePath);
         }
 
-        public void Write(IEnumerable<Dictionary<string,string>> records)
+        public void Write(IEnumerable<Dictionary<string, string>> records)
         {
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
             {

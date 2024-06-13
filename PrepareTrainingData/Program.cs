@@ -1,11 +1,11 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
+using CsvHelper;
 using Serilog;
-using TestTimePrediction;
 using Trace.Api.Common;
 using Trace.Api.Configuration;
 
-namespace MyApp // Note: actual namespace depends on the project name.
+namespace PrepareTrainingData
 {
     internal class Program
     {
@@ -15,74 +15,93 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             var fileName = @$"ITuffProcessedData";
             var dataFileName = appDirectory + $"\\{fileName}.csv";
-            var logFileName = appDirectory + "\\Logs\\" + $"\\{fileName}_{DateTime.Now:yy-MM-dd_hh-mm-ss}.log.txt";
+            var logFileName = appDirectory + "\\Logs\\" + $"{fileName}.{DateTime.Now:yy-MM-dd_hh-mm-ss}.log.txt";
 
             var logger = new LoggerConfiguration()
                        .WriteTo.Console()
                        .WriteTo.File(logFileName)
                        .CreateLogger();
-
-            logger.Information("Main starting...");
             var sw = new Stopwatch();
-            sw.Start();
-            
-            // object containing IDC network drives map
-            var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
 
-            var traceParser = new TraceParser(logger);
-
-            var allItuffDefinitions = traceParser.GetClassITuffDefinitions().ToArray();
-
-            var lastITuffRecordDate = GetLastRecordDate(dataFileName);
-            var ituffListForParsing =
-                allItuffDefinitions
-                    .Where(ituff => ituff.EndDate > lastITuffRecordDate)
-                    .Where(ituff => ituff.ExperimentType is "Engineering" or "Correlation" or "WalkTheLot")
-                    .OrderBy(ituff => ituff.EndDate)
-                    .TakeLast(allItuffDefinitions.Count());
-
-            IDataCreator dataCreator = new DataCreator();
-
-            var csv = new Csv(dataFileName);
-            foreach (var ituffDefinitionGroup in
-                                          ituffListForParsing.GroupBy(i => i.StplPath + "_" + i.TplPath))
+            try
             {
-                var testProgram = traceParser.GetTestProgram(driveMapping, ituffDefinitionGroup.First().StplPath, ituffDefinitionGroup.First().TplPath);
+                logger.Information("Main starting...");
+                sw.Start();
 
-                if (testProgram == null)
+                // object containing IDC network drives map
+                var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
+
+                var traceParser = new TraceParser(logger);
+
+                var allItuffDefinitions = traceParser.GetClassITuffDefinitions().ToArray();
+
+                var lastITuffRecordDate = GetLastRecordDate(dataFileName);
+                var ituffListForParsing =
+                    allItuffDefinitions
+                        .Where(ituff => ituff.EndDate > lastITuffRecordDate)
+                        .Where(ituff => ituff.ExperimentType is "Engineering" or "Correlation" or "WalkTheLot")
+                        .OrderBy(ituff => ituff.EndDate)
+                        .TakeLast(allItuffDefinitions.Count());
+
+                IDataCreator dataCreator = new DataCreator();
+
+                var csv = new Csv(dataFileName);
+                foreach (var ituffDefinitionGroup in
+                         ituffListForParsing.GroupBy(i => i.StplPath + "_" + i.TplPath))
                 {
-                    continue;
-                }
+                    var testProgram = traceParser.GetTestProgram(
+                        driveMapping,
+                        ituffDefinitionGroup.First().StplPath,
+                        ituffDefinitionGroup.First().TplPath);
 
-                foreach (var ituffDefinition in ituffDefinitionGroup)
-                {
-                    var newRecords = await dataCreator.FillRecordsAsync(driveMapping, traceParser, ituffDefinition, testProgram);
-
-                    try
-                    {
-                        csv.Write(newRecords);
-                    }
-                    // in case file is already open in excel
-                    catch
+                    if (testProgram == null)
                     {
                         continue;
                     }
 
-                    logger.Information($"Writing {newRecords.Count()} records to file {dataFileName}");
+                    foreach (var ituffDefinition in ituffDefinitionGroup)
+                    {
+                        var newRecords = await dataCreator.FillRecordsAsync(
+                            driveMapping,
+                            traceParser,
+                            ituffDefinition,
+                            testProgram);
+
+                        try
+                        {
+                            csv.Write(newRecords);
+                        }
+                        catch // in case file is already open in excel
+                        {
+                            continue;
+                        }
+
+                        logger.Information($"Writing {newRecords.Count()} records to file {dataFileName}");
+                    }
                 }
             }
-
-            sw.Stop();
-            logger.Information($"\nProgram run took {sw.Elapsed}");
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed with exception {e}");
+                throw;
+            }
+            finally
+            {
+                sw.Stop();
+                logger.Information($"\nProgram run took {sw.Elapsed}");
+            }
         }
 
         private static DateTime GetLastRecordDate(string dataFileName)
         {
-            if(!File.Exists(dataFileName))
+            if (!File.Exists(dataFileName))
+            {
                 return DateTime.MinValue;
+            }
 
             string lastLine = File.ReadLines(dataFileName).Last(l => !string.IsNullOrEmpty(l));
-            var dateTime = lastLine.Split(',').ElementAt(12);
+            Regex regex = new Regex("(\\d{1,2}/\\d{1,2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} [AP]M)");
+            var dateTime = regex.Match(lastLine).Value;
             return DateTime.Parse(dateTime);
         }
 

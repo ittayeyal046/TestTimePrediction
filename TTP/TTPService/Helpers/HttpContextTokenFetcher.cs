@@ -7,16 +7,16 @@ namespace TTPService.Helpers;
 
 public class HttpContextTokenFetcher : IHttpContextTokenFetcher
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor httpContextAccessor;
 
     public HttpContextTokenFetcher(IHttpContextAccessor httpContextAccessor)
     {
-        _httpContextAccessor = httpContextAccessor;
+        this.httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<Result<string>> GetToken()
+    public async Task<Result<string>> GetTokenAsync()
     {
-        var httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = this.httpContextAccessor.HttpContext;
         if (httpContext == null)
         {
             return Result.Fail<string>("Failed to retrieve access token from http context, http context is null");

@@ -8,11 +8,11 @@ namespace TTPService.Validators.Properties
 {
     public class PathValidator : ValidationAttribute
     {
-        private readonly PathType _pathType;
+        private readonly PathType pathType;
 
         public PathValidator()
         {
-            _pathType = PathType.Unc;
+            this.pathType = PathType.Unc;
         }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
@@ -32,7 +32,7 @@ namespace TTPService.Validators.Properties
                     return new ValidationResult("tpPath contains invalid characters");
                 }
 
-                var pattern = GetRegexPattern(_pathType);
+                var pattern = GetRegexPattern(this.pathType);
 
                 if (!Regex.IsMatch(path.Trim(), pattern))
                 {
