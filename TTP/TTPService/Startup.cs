@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Linq;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -28,6 +31,8 @@ namespace TTPService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            RegisterPythonPathProvider(services);
+
             services.AddLogging(Configuration);
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
@@ -65,6 +70,21 @@ namespace TTPService
             services.AddConfiguration(Configuration);
 
             services.AddServices();
+        }
+
+        private void RegisterPythonPathProvider(IServiceCollection services)
+        {
+            var commandLineProvider = (Configuration as IConfigurationRoot)?.Providers
+                .OfType<CommandLineConfigurationProvider>()
+                .FirstOrDefault();
+            if (commandLineProvider != null)
+            {
+                // Example: Reading a configuration value passed from Main
+                if (commandLineProvider.TryGet("PythonPath", out var pythonPath))
+                {
+                    services.AddSingleton<IPythonPathProvider>(new PythonPathProvider(pythonPath));
+                }
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

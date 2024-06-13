@@ -5,7 +5,7 @@ using TTPService.FunctionalExtensions;
 
 namespace TTPService.Models
 {
-    public interface ITtpModel
+    public interface ITTPModel
     {
         Task<Result<double, ErrorResult>> PredictAsync(
             string stplPath,

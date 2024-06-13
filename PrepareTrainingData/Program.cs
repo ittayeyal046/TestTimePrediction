@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
+using CsvHelper;
 using Serilog;
 using Trace.Api.Common;
 using Trace.Api.Configuration;

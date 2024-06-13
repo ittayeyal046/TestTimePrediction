@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using PredictTestTimeWrapper;
 using Trace.Api.Common.TP;
 using Trace.Common;
+using TTPService.Configuration;
 using TTPService.Enums;
 using TTPService.FunctionalExtensions;
 using TTPService.Helpers;
@@ -15,19 +16,19 @@ using Result = CSharpFunctionalExtensions.Result;
 
 namespace TTPService.Models
 {
-    public class TTPModel : ITtpModel
+    public class TTPModel : ITTPModel
     {
         private readonly ILogger logger;
         private readonly IMapper mapper;
         private readonly ITraceParserHelper traceParserHelper;
-        private readonly string pythonPath;
+        private readonly IPythonPathProvider pythonPathProvider;
 
-        public TTPModel(IMapper mapper, ILogger<TTPModel> logger, ITraceParserHelper traceParserHelper, string pythonPath)
+        public TTPModel(IMapper mapper, ILogger<TTPModel> logger, ITraceParserHelper traceParserHelper, IPythonPathProvider pythonPathProvider)
         {
             this.logger = logger;
             this.mapper = mapper;
             this.traceParserHelper = traceParserHelper;
-            this.pythonPath = pythonPath;
+            this.pythonPathProvider = pythonPathProvider;
         }
 
         public async Task<Result<double, ErrorResult>> PredictAsync(
@@ -55,9 +56,8 @@ namespace TTPService.Models
                 ["ExperimentType"] = experimentType.ToString() // correlation / engineering / walkTheLot
             };
 
-            // TODO: read pythonExePath from environment variable?;
             // TODO: inject TTPWrapper to constructor & add interface;
-            var pythonExePath = pythonPath;
+            var pythonExePath = pythonPathProvider.PythonPath;
             IPredictTestTimeWrapper ttpWrapper = new PredictTestTimeWrapper.PredictTestTimeWrapper(pythonExePath);
             var prediction = await ttpWrapper.Predict(parametersDictionary);
 

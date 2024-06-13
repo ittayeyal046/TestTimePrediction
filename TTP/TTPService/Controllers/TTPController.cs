@@ -18,12 +18,12 @@ namespace TTPService.Controllers
     public class TTPController : ControllerBase
     {
         private readonly ILogger<TTPController> logger;
-        private readonly ITtpModel ttpModel;
+        private readonly ITTPModel ittpModel;
 
-        public TTPController(ILogger<TTPController> logger, ITtpModel ttpModel)
+        public TTPController(ILogger<TTPController> logger, ITTPModel ittpModel)
         {
             this.logger = logger;
-            this.ttpModel = ttpModel;
+            this.ittpModel = ittpModel;
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace TTPService.Controllers
             }
 
             var parsedStatus = (ExperimentType)Enum.Parse(typeof(ExperimentType), experimentType, true);
-            var prediction = await this.ttpModel.PredictAsync(stplPath, tplPath, partType, processStep, parsedStatus);
+            var prediction = await this.ittpModel.PredictAsync(stplPath, tplPath, partType, processStep, parsedStatus);
             return prediction.ToActionResult(this);
         }
     }

@@ -121,7 +121,7 @@ public class TraceParser
 
         using var session = sessionCreator.CreateSession(ituffDefinition);
 
-        logger.Information($"Loading data for: {ituffDefinition.Name} ...");
+        logger.Information($"Loading data for: {ituffDefinition.Name}, which ran on: {ituffDefinition.EndDate}...");
 
         // wait for the data to load
         await session.SessionStartup;
