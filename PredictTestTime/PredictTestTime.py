@@ -13,7 +13,8 @@ def setDummyField(df, prefixColumnText, suffixCoulmnText):
     any_column_that_suits = any(col.startswith(prefixColumnText) and
                                 col.endswith(suffixCoulmnText) for col in df.columns)
     if(any_column_that_suits == False):
-         raise ValueError(f"Suffix {suffixCoulmnText} on columns {prefixColumnText} is not found")
+         #raise ValueError(f"Suffix {suffixCoulmnText} on columns {prefixColumnText} is not found")
+         print(f"Suffix {suffixCoulmnText} on columns {prefixColumnText} is not found")
 
     # reset all relevant columns
     for column in df.columns:
