@@ -25,6 +25,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="C:\Users\ittayeya\.nuget\packages\traceapi\10.3.3\contentFiles\any\netstandard2.1\krb5.conf" />
+	  <None Remove="C:\Users\ittayeya\.nuget\packages\traceapi\10.3.3\contentFiles\any\netstandard2.1\sqlnet.ora" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="..\..\stylecop.json" Link="stylecop.json" />
 	</ItemGroup>
 
