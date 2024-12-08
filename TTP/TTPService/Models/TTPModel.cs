@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using PredictTestTimeWrapper;
 using Trace.Api.Common.TP;
-using Trace.Common;
 using TTPService.Configuration;
 using TTPService.Enums;
 using TTPService.FunctionalExtensions;
@@ -19,14 +17,12 @@ namespace TTPService.Models
     public class TTPModel : ITTPModel
     {
         private readonly ILogger logger;
-        private readonly IMapper mapper;
         private readonly ITraceParserHelper traceParserHelper;
         private readonly IPythonPathProvider pythonPathProvider;
 
-        public TTPModel(IMapper mapper, ILogger<TTPModel> logger, ITraceParserHelper traceParserHelper, IPythonPathProvider pythonPathProvider)
+        public TTPModel(ILogger<TTPModel> logger, ITraceParserHelper traceParserHelper, IPythonPathProvider pythonPathProvider)
         {
             this.logger = logger;
-            this.mapper = mapper;
             this.traceParserHelper = traceParserHelper;
             this.pythonPathProvider = pythonPathProvider;
         }
@@ -60,6 +56,8 @@ namespace TTPService.Models
             var pythonExePath = pythonPathProvider.PythonPath;
             IPredictTestTimeWrapper ttpWrapper = new PredictTestTimeWrapper.PredictTestTimeWrapper(pythonExePath);
             var prediction = await ttpWrapper.Predict(parametersDictionary);
+            string parameters = string.Join(",", parametersDictionary.Select(kvp => $"{kvp.Key}: {kvp.Value}"));
+            logger.LogInformation($"Predicated test time is {prediction.TotalSeconds} seconds for parameters {{{parameters}}}");
 
             // 1. Get all the record data from trace API - as we did when we trained our model
             //  1.1 Do we fill the data from the trace API or from our .csv? if from .csv we need to add column of TP ?

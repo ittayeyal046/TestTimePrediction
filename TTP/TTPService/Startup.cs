@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text.Json.Serialization;
-using AutoMapper;
+﻿using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -67,7 +63,6 @@ namespace TTPService
             services.AddApiVersioning(o => o.ReportApiVersions = true);
             services.AddApiBehavior(Configuration);
             services.AddSwagger(Configuration);
-            services.AddAutoMapper();
             services.AddConfiguration(Configuration);
 
             services.AddServices();
