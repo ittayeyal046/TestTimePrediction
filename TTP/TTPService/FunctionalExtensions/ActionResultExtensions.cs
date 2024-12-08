@@ -10,8 +10,8 @@ namespace TTPService.FunctionalExtensions
         {
             ActionResult<T> actionResult = null;
             result
-                .OnFailure(errorResult => { actionResult = FailureHandler<T>(controller, errorResult); })
-                .OnSuccess(resultValue => actionResult = controller.Ok(resultValue));
+                .TapError(errorResult => { actionResult = FailureHandler<T>(controller, errorResult); })
+                .Map(resultValue => actionResult = controller.Ok(resultValue));
 
             return actionResult;
         }

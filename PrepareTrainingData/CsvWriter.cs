@@ -23,12 +23,6 @@ namespace PrepareTrainingData
             }
         }
 
-        private void CreateBackup(string sourceFilePath)
-        {
-            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-            File.Copy(sourceFilePath, sourceFilePath + $".{timestamp}.backup");
-        }
-
         public void WriteRecords(IEnumerable<Dictionary<string, string>> records)
         {
             var csvConfiguration = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -61,6 +55,12 @@ namespace PrepareTrainingData
 
                 csv.NextRecord();
             }
+        }
+
+        private void CreateBackup(string sourceFilePath)
+        {
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            File.Copy(sourceFilePath, sourceFilePath + $".{timestamp}.backup");
         }
     }
 }

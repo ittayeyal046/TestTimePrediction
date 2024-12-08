@@ -19,15 +19,15 @@ public class HttpContextTokenFetcher : IHttpContextTokenFetcher
         var httpContext = this.httpContextAccessor.HttpContext;
         if (httpContext == null)
         {
-            return Result.Fail<string>("Failed to retrieve access token from http context, http context is null");
+            return Result.Failure<string>("Failed to retrieve access token from http context, http context is null");
         }
 
         var accessToken = await httpContext.GetTokenAsync("access_token");
         if (string.IsNullOrEmpty(accessToken))
         {
-            return Result.Fail<string>("Failed to retrieve access token from current http context");
+            return Result.Failure<string>("Failed to retrieve access token from current http context");
         }
 
-        return Result.Ok(accessToken);
+        return Result.Success(accessToken);
     }
 }

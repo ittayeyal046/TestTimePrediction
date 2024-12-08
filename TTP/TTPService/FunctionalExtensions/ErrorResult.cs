@@ -2,8 +2,6 @@
 {
     public class ErrorResult
     {
-        public const string DefaultError = "_"; // this is not used, only given to  Result.Fail<T> to override
-
         public string Error { get; set; }
 
         public ErrorTypes ErrorType { get; set; }
@@ -14,8 +12,5 @@
                 ErrorType = errorType,
                 Error = error,
             };
-
-        public static ErrorResult StringError(string error) =>
-            new ErrorResult { Error = error };
     }
 }

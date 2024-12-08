@@ -7,9 +7,6 @@ namespace TTPService.Configuration
     {
         public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            services.ConfigureSection<RepositoryOptions>(configuration);
-            services.ConfigureSection<SystemBaseUrlsOptions>(configuration);
-            services.ConfigureSection<RetryOptions>(configuration);
             return services;
         }
 
