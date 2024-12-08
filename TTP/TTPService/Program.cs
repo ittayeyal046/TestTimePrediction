@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using CommandLine;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TTPService.Logging;
 
@@ -15,12 +18,20 @@ namespace TTPService
     {
         public static async Task Main(string[] args)
         {
-            ValidateArgs(args);
+            var parsedOptions = new Options();
+            var parsedArgs = Parser.Default.ParseArguments<Options>(args)
+                .WithParsed(options => parsedOptions = options)
+                .WithNotParsed(HandleParseError);
+
+            if (parsedArgs.Tag == ParserResultType.NotParsed)
+            {
+                return;
+            }
 
             using var cancellationTokenSource = new CancellationTokenSource();
             try
             {
-                await BuildHost(args)
+                await BuildHost(args, parsedOptions)
                     .RunAsync(cancellationTokenSource.Token);
             }
             catch (OperationCanceledException)
@@ -29,34 +40,38 @@ namespace TTPService
             }
         }
 
-        public static IHost BuildHost(string[] args)
+        public static IHost BuildHost(string[] args, Options options)
         {
-            return CreateHostBuilder(args).Build();
+            return CreateHostBuilder(args, options).Build();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args, Options options) =>
             Host.CreateDefaultBuilder(args)
                 .UseLogging()
-                .ConfigureAppConfiguration( (hostingContext, config) =>
+                .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddJsonFile("ExperimentIdentifiers.json", optional: true, reloadOnChange: true);
                     config.AddCommandLine(args);
                 })
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddSingleton(options);
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                     webBuilder.UseStartup<Startup>());
 
-        private static void ValidateArgs(string[] args)
+        private static void HandleParseError(IEnumerable<Error> errors)
         {
-            string pattern = "PythonPath=\"*"; // Regex pattern
-
-            var regex = new Regex(pattern);
-            if (args.Any(arg => regex.Match(arg).Success))
+            foreach (var error in errors)
             {
-                return;
+                Console.WriteLine(error.ToString());
             }
-
-            throw new InvalidDataException("must have parameter of king 'PythonPath=\"python_exe_location\"'");
         }
+    }
 
+    public class Options
+    {
+        [Option('p', "PythonPath", Required = true, HelpText = "Path to the Python executable.")]
+        public string PythonPath { get; set; }
     }
 }

@@ -25,13 +25,14 @@ namespace TTPService
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            RegisterPythonPathProvider(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<Options>();
+            RegisterPythonPathProvider(services, options);
 
             services.AddLogging(Configuration);
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
@@ -72,21 +73,13 @@ namespace TTPService
             services.AddServices();
         }
 
-        private void RegisterPythonPathProvider(IServiceCollection services)
+        private void RegisterPythonPathProvider(IServiceCollection services, Options options)
         {
-            var commandLineProvider = (Configuration as IConfigurationRoot)?.Providers
-                .OfType<CommandLineConfigurationProvider>()
-                .FirstOrDefault();
-            if (commandLineProvider != null)
+            if (!string.IsNullOrEmpty(options.PythonPath))
             {
-                // Example: Reading a configuration value passed from Main
-                if (commandLineProvider.TryGet("PythonPath", out var pythonPath))
-                {
-                    services.AddSingleton<IPythonPathProvider>(new PythonPathProvider(pythonPath));
-                }
+                services.AddSingleton<IPythonPathProvider>(new PythonPathProvider(options.PythonPath));
             }
         }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IApiVersionDescriptionProvider provider)
         {
