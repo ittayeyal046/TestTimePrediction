@@ -15,6 +15,7 @@
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<ApplicationIcon>Resources/TTP2.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,6 +32,7 @@
 
 	<ItemGroup>
 		<Content Include="..\..\stylecop.json" Link="stylecop.json" />
+		<Content Include="Resources\TTP2.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
