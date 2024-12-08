@@ -12,7 +12,6 @@ namespace TTPService
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ITTPModel, TTPModel>();
             services.AddTransient<ITraceParserHelper, TraceParserHelper>();
-            services.AddTransient<IHttpContextTokenFetcher, HttpContextTokenFetcher>();
 
             return services;
         }

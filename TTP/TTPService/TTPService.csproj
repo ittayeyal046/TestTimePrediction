@@ -55,22 +55,4 @@
 		<ProjectReference Include="..\..\PredictTestTime\PredictTestTimeWrapper.csproj" />
 		<ProjectReference Include="..\..\PrepareTrainingData\PrepareTrainingData.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="PublishYamls\publishProduction.yaml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="PublishYamls\publishE2E.yaml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="PublishYamls\publishStaging.yaml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="PublishYamls\publishDevelopment.yaml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="PublishYamls\publishIntegration.yaml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
 </Project>
