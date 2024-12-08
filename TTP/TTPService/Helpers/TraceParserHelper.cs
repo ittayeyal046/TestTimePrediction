@@ -23,11 +23,11 @@ public class TraceParserHelper : ITraceParserHelper
             .WriteTo.File(logFileName)
             .CreateLogger();
 
-        logger.Information("starting to parse TP from TraceParser...");
+        logger.Information("starting to parse TP from ITuffServices...");
 
         // object containing IDC network drives map
         var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
-        var traceParser = new TraceParser(logger);
+        var traceParser = new ITuffServices(logger);
 
         TestProgram testProgram = traceParser.GetTestProgram(driveMapping, stplPath, tplPath);
 

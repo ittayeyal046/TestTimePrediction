@@ -3,16 +3,16 @@ using Trace.Api.Common.Ituff;
 using Trace.Api.Common.TP;
 using Trace.Api.Services.Common;
 
-public class DataCreator : IDataCreator
+public class DataProvider : IDataProvider
 {
-    public async Task<IList<Dictionary<string, string>>> FillRecordsAsync(IDriveMapping driveMapping, TraceParser traceParser, ClassItuffDefinition ituffDefinition, TestProgram testProgram)
+    public async Task<IList<Dictionary<string, string>>> FillRecordsAsync(IDriveMapping driveMapping, ITuffServices ituffServices, ClassItuffDefinition ituffDefinition, TestProgram testProgram)
     {
         var list = new List<Dictionary<string, string>>();
         IEnumerable<(string Key, (bool IsPassed, TimeSpan TotalUnitRunTime))> testTimePerUnit;
 
         try
         {
-            testTimePerUnit = await traceParser.CalcTestTimeForUnitsAsync(driveMapping, ituffDefinition);
+            testTimePerUnit = await ituffServices.CalcTestTimeForUnitsAsync(driveMapping, ituffDefinition);
         }
         catch
         {

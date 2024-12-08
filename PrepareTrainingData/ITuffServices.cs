@@ -19,15 +19,15 @@ namespace PrepareTrainingData;
 /// <summary>
 /// The trace parser.
 /// </summary>
-public class TraceParser
+public class ITuffServices
 {
     private readonly ILogger logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TraceParser"/> class.
+    /// Initializes a new instance of the <see cref="ITuffServices"/> class.
     /// </summary>
     /// <param name="logger">The logger.</param>
-    public TraceParser(ILogger logger)
+    public ITuffServices(ILogger logger)
     {
         this.logger = logger;
     }

@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PredictTestTimeWrapper", "P
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TrainModel", "TrainModel", "{FB6BF936-CBCA-4F60-956E-5F1B55B52BE9}"
 	ProjectSection(SolutionItems) = preProject
+		TrainModel\RunTrainModel.bat = TrainModel\RunTrainModel.bat
 		TrainModel\TrainModel.py = TrainModel\TrainModel.py
 	EndProjectSection
 EndProject

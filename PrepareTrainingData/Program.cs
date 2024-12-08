@@ -31,7 +31,7 @@ namespace PrepareTrainingData
                 // object containing IDC network drives map
                 var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
 
-                var traceParser = new TraceParser(logger);
+                var traceParser = new ITuffServices(logger);
 
                 var allItuffDefinitions = traceParser.GetClassITuffDefinitions().ToArray();
 
@@ -43,9 +43,9 @@ namespace PrepareTrainingData
                         .OrderBy(ituff => ituff.EndDate)
                         .TakeLast(allItuffDefinitions.Count());
 
-                IDataCreator dataCreator = new DataCreator();
+                IDataProvider dataProvider = new DataProvider();
 
-                var csv = new Csv(dataFileName);
+                var csv = new CsvWriter(dataFileName);
                 foreach (var ituffDefinitionGroup in
                          ituffListForParsing.GroupBy(i => i.StplPath + "_" + i.TplPath))
                 {
@@ -61,7 +61,7 @@ namespace PrepareTrainingData
 
                     foreach (var ituffDefinition in ituffDefinitionGroup)
                     {
-                        var newRecords = await dataCreator.FillRecordsAsync(
+                        var newRecords = await dataProvider.FillRecordsAsync(
                             driveMapping,
                             traceParser,
                             ituffDefinition,
@@ -69,7 +69,7 @@ namespace PrepareTrainingData
 
                         try
                         {
-                            csv.Write(newRecords);
+                            csv.WriteRecords(newRecords);
                         }
                         catch // in case file is already open in excel
                         {

@@ -1,31 +1,44 @@
 ﻿using System.Globalization;
-using System.ServiceModel.Channels;
 using CsvHelper;
 using CsvHelper.Configuration;
 
 namespace PrepareTrainingData
 {
-    public class Csv
+    public class CsvWriter
     {
         private readonly string dataFilePath;
         private bool needToAddHeader;
 
-        public Csv(string dataFilePath)
+        public CsvWriter(string dataFilePath)
         {
             this.dataFilePath = dataFilePath;
-            needToAddHeader = !File.Exists(dataFilePath);
+
+            var fileAlreadyExists = File.Exists(dataFilePath);
+
+            needToAddHeader = !fileAlreadyExists;
+
+            if (fileAlreadyExists)
+            {
+                CreateBackup(dataFilePath);
+            }
         }
 
-        public void Write(IEnumerable<Dictionary<string, string>> records)
+        private void CreateBackup(string sourceFilePath)
         {
-            var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            File.Copy(sourceFilePath, sourceFilePath + $".{timestamp}.backup");
+        }
+
+        public void WriteRecords(IEnumerable<Dictionary<string, string>> records)
+        {
+            var csvConfiguration = new CsvConfiguration(CultureInfo.CurrentCulture)
             {
                 HasHeaderRecord = true,
                 Delimiter = ","
             };
 
             using var writer = new StreamWriter(dataFilePath, true);
-            using var csv = new CsvWriter(writer, config);
+            using var csv = new CsvHelper.CsvWriter(writer, csvConfiguration);
 
             if (needToAddHeader)
             {
