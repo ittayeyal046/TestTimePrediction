@@ -6,43 +6,6 @@ namespace TTPService.FunctionalExtensions
 {
     public static class ActionResultExtensions
     {
-        public static ActionResult<T> ToActionResult<T>(this Maybe<T> maybe, ControllerBase controller)
-        {
-            if (maybe.HasNoValue)
-            {
-                return controller.NotFound();
-            }
-
-            return controller.Ok(maybe.Value);
-        }
-
-        public static ActionResult<T> ToActionResult<T>(this Result<T> result, ControllerBase controller, Func<T, ActionResult<T>> onSuccessFunc)
-        {
-            return AsyncResultExtensionsRightOperand.OnFailure(result, s => throw new Exception(s)) // TODO:[Team]<-[Golan] - let middleware handle exception in one place. it also gives us one stop shop for logging
-                .OnSuccess(onSuccessFunc) // TODO:[Team]<-[Golan] - Post(create) should return 201 (created) status code with route to newlly created item in header location
-                .Result.Value;
-        }
-
-        public static ActionResult<VoidResult> ToActionResult(this Result<VoidResult, ErrorResult> result, ControllerBase controller, Func<ControllerBase, ActionResult<VoidResult>> onSuccessFunc)
-        {
-            ActionResult<VoidResult> actionResult = null;
-            result
-                .OnFailure(errorResult => { actionResult = FailureHandler<VoidResult>(controller, errorResult); })
-                .OnSuccess(voidResult => actionResult = onSuccessFunc(controller));
-
-            return actionResult;
-        }
-
-        public static ActionResult<T> ToActionResult<T>(this Result<T, ErrorResult> result, ControllerBase controller, Func<T, ActionResult<T>> onSuccessFunc)
-        {
-            ActionResult<T> actionResult = null;
-            result
-                .OnFailure(errorResult => { actionResult = FailureHandler<T>(controller, errorResult); })
-                .OnSuccess(resultValue => actionResult = onSuccessFunc(resultValue));
-
-            return actionResult;
-        }
-
         public static ActionResult<T> ToActionResult<T>(this Result<T, ErrorResult> result, ControllerBase controller)
         {
             ActionResult<T> actionResult = null;
