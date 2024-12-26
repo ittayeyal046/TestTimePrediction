@@ -59,8 +59,19 @@ namespace PrepareTrainingData
 
         private void CreateBackup(string sourceFilePath)
         {
-            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-            File.Copy(sourceFilePath, sourceFilePath + $".{timestamp}.backup");
+            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            var sourceDirectory = Path.GetDirectoryName(sourceFilePath);
+            var fileName = Path.GetFileName(sourceFilePath);
+            var backupFolder = Path.Combine(sourceDirectory,"CsvBackup");
+
+            // Ensure the backup folder exists
+            if (!Directory.Exists(backupFolder))
+            {
+                Directory.CreateDirectory(backupFolder);
+            }
+
+            var destinationFilePath = Path.Combine(backupFolder, fileName + $".{timestamp}.backup");
+            File.Copy(sourceFilePath, destinationFilePath);
         }
     }
 }
