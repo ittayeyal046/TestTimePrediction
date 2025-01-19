@@ -58,7 +58,29 @@ namespace TTPService
                     services.AddSingleton(options);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
-                    webBuilder.UseStartup<Startup>());
+                {
+                    webBuilder.UseStartup<Startup>();
+                    //webBuilder.UseUrls(options.ApplicationUrl);
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddHostedService<ConsoleHostedService>();
+                });
+
+        public class ConsoleHostedService : IHostedService
+        {
+            public Task StartAsync(CancellationToken cancellationToken)
+            {
+                Console.WriteLine("TTP Server is Running...");
+                return Task.CompletedTask;
+            }
+
+            public Task StopAsync(CancellationToken cancellationToken)
+            {
+                Console.WriteLine("TTP Server is stopping...");
+                return Task.CompletedTask;
+            }
+        }
 
         private static void HandleParseError(IEnumerable<Error> errors)
         {

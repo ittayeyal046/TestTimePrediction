@@ -64,7 +64,7 @@ namespace TTPService.Models
             // 2. Build the record with ALL the columns (dummies makes all possible enum values to columns, we have only one value)
             // 3. Fill the record with the data
             // 4. Call the .py and return the result
-            return Result.Ok<double, ErrorResult>(prediction.TotalSeconds);
+            return Result.Success<double, ErrorResult>(prediction.TotalSeconds);
         }
     }
 }
