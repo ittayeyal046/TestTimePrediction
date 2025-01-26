@@ -6,19 +6,28 @@ import matplotlib.pyplot as plt
 import sklearn.model_selection as mods
 import os;
 
-# %%
-# not show graphs (needed for cmd run)
-matplotlib.use('agg')
+###########################
 
-# %%
-file_name = 'ITuffProcessedData'
-file_csv_ext = '.csv'
-trainingDataPath = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
-df=pd.read_csv(os.path.join(trainingDataPath, file_name + file_csv_ext))
-               
+# if to show graphs (needed for cmd run)
+def show_graphs(showGraphs=True):
+    if not showGraphs:
+        matplotlib.use('agg')
 
-# %%
-df.head()
+def load_training_data():
+    file_name = 'ITuffProcessedData'
+    file_csv_ext = '.csv'
+    trainingDataPath = os.path.join(os.getenv('LOCALAPPDATA'), "TTP\\TrainingData\\")
+    df=pd.read_csv(os.path.join(trainingDataPath, file_name + file_csv_ext))
+    return file_name,file_csv_ext,trainingDataPath,df
+
+
+###########################
+
+show_graphs(showGraphs=True)
+
+file_name, file_csv_ext, trainingDataPath, df = load_training_data()
+            
+#df.head()
 
 # %%
 # Graph of Tests Passed / Failed
@@ -92,8 +101,8 @@ plt.xlim(0,1000)
 plt.show()
 
 # %%
-min_time = 100
-max_time = 550
+min_time = 50
+max_time = 500
 
 # %%
 # add graph of how many above max_time
@@ -262,6 +271,7 @@ y_check = y_pred / y_test * 100
 plt.hist(y_check, 40)
 plt.xlabel('predict vs actual % accuracy')
 plt.ylabel('tests amount')
+plt.show()
 
 # %%
 ranges = [75, 80, 85, 90, 95, 105 ,110,115,120,125]
@@ -327,5 +337,3 @@ for i, v in enumerate(values):
     
 # Displaying the plot
 plt.show()
-
-# %%
