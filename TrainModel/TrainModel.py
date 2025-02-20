@@ -241,7 +241,7 @@ def plot_prediction_improvement_on_default_value(y_test, y_pred):
     # Adding labels and title
     plt.xlabel('Categories')
     plt.ylabel('Time in seconds')
-    plt.title('Sum quarter Improvment')
+    plt.title('Average Distance Improvment')
 
     for i, v in enumerate(values):
         plt.text(i, v,'%d' % v, ha='center', va='bottom')
