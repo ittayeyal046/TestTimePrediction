@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using TTPService.Logging;
 
 namespace TTPService
@@ -60,7 +60,7 @@ namespace TTPService
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    //webBuilder.UseUrls(options.ApplicationUrl);
+                    webBuilder.UseUrls(options.ApplicationUrl);
                 })
                 .ConfigureServices((context, services) =>
                 {
@@ -69,16 +69,45 @@ namespace TTPService
 
         public class ConsoleHostedService : IHostedService
         {
+            private readonly Options _options;
+
+            public ConsoleHostedService(Options options)
+            {
+                _options = options;
+            }
+
             public Task StartAsync(CancellationToken cancellationToken)
             {
-                Console.WriteLine("TTP Server is Running...");
+                string localIp = GetLocalIPAddress();
+                var ip = _options.ApplicationUrl.Split(':')[2];
+                Log.Logger.Information($"TTP Server is Running on {_options.ApplicationUrl}");
+                Log.Logger.Information($"Access TTP Service from another resource is available with url: {localIp}:{ip}");
                 return Task.CompletedTask;
             }
 
             public Task StopAsync(CancellationToken cancellationToken)
             {
-                Console.WriteLine("TTP Server is stopping...");
+                Log.Logger.Information("TTP Server is stopping...");
                 return Task.CompletedTask;
+            }
+
+            private string GetLocalIPAddress()
+            {
+                foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    if (networkInterface.OperationalStatus == OperationalStatus.Up &&
+                        networkInterface.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                    {
+                        foreach (UnicastIPAddressInformation ip in networkInterface.GetIPProperties().UnicastAddresses)
+                        {
+                            if (ip.Address.AddressFamily == AddressFamily.InterNetwork) // IPv4
+                            {
+                                return ip.Address.ToString();
+                            }
+                        }
+                    }
+                }
+                return "127.0.0.1"; // Fallback if no network is found
             }
         }
 

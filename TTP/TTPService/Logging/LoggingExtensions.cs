@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.IO;
+using System.Threading;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +17,10 @@ namespace TTPService.Logging
     {
         public static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
         {
+            // Retrieve the log file path from configuration or fallback to default location
+            var logFilePath = configuration.GetValue<string>("LoggingPath:LogFilePath") ??
+                              Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "app.log");
+
             services
                 .AddApplicationInsightsTelemetry(options => configuration.GetSection("ApplicationInsights").Bind(options))
                 .AddApplicationInsights(configuration);

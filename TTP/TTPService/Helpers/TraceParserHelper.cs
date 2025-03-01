@@ -13,15 +13,8 @@ public class TraceParserHelper : ITraceParserHelper
 {
     public TestProgram ParseTP(string stplPath, string tplPath)
     {
+        var logger = Log.Logger;
         var appDirectory = GetAppDirectory();
-
-        var fileName = @$"TraceParserHelper_{DateTime.Now:yy-MM-dd_hh-mm-ss}";
-        var logFileName = appDirectory + $"\\{fileName}.log.txt";
-
-        var logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File(logFileName)
-            .CreateLogger();
 
         logger.Information("starting to parse TP from ITuffServices...");
 
@@ -29,6 +22,7 @@ public class TraceParserHelper : ITraceParserHelper
         var driveMapping = ConfigurationLoader.GetDriveMapping(SiteEnum.IDC, SiteDataSourceEnum.CLASSHDMT);
         var traceParser = new ITuffServices(logger);
 
+        logger.Information("getting test program from trace parsers...");
         TestProgram testProgram = traceParser.GetTestProgram(driveMapping, stplPath, tplPath);
 
         if (testProgram == null)
@@ -36,6 +30,8 @@ public class TraceParserHelper : ITraceParserHelper
             logger.Error("Failed to parse the Test Program from TraceApi");
             return null;
         }
+
+        logger.Information("test program fetched successfully from trace parsers");
 
         return testProgram;
     }
